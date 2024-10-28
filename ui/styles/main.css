@@ -1,0 +1,418 @@
+html,
+body {
+  /* overflow: scroll; */
+  font-family: 'Lucida Grande', sans-serif;
+  font-size: 11px;
+  width: 100%;
+  height: 100%;
+  /* margin: 0 !important; */
+}
+
+select {
+  height: 18px;
+  font-size: 11px;
+}
+
+.wrapper_main {
+  width: 98.5%;
+  height: 97%;
+  display: flex;
+}
+
+.wrapper_top {
+  float: left;
+  width: 100%;
+  height: 100%;
+}
+
+.wrapper_left {
+  width: 70%;
+}
+
+.wrapper_right {
+  width: 30%;
+}
+
+.color-selection {
+  display: flex;
+  flex-direction: column; 
+}
+
+.radio-group {
+  display: flex;
+  align-items: center; 
+}
+
+.color-container {
+  display: flex;
+  align-items: center; 
+}
+
+#yGroupLabel {
+  display: flex;
+  align-items: center; 
+}
+
+#yGroupLabel input[type="radio"] {
+  margin-left: 10px; 
+}
+
+#yGroupLabel label {
+  margin-left: 5px; 
+}
+
+
+#fc_view {
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: 50%;
+  border-style: solid;
+  border-width: thin;
+  border-color: #DDDDDD;
+  /* border-bottom-color: #FFFFFF; */
+}
+
+#fc_view_bottom {
+  display: flex;
+  position: relative;
+  width: 40%;
+  height: 100%;
+  border-style: solid;
+  border-width: thin;
+  border-color: #DDDDDD;
+}
+
+.view_title {
+  position: absolute;
+  right: 0px;
+  padding-top: 1px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 6px;
+  margin-bottom: 10px;
+  font-size: 10px;
+  color: #FFFFFF;
+  background-color: #91a7c6;
+  border-radius: 2.5px;
+  font-family: 'Lucida Grande', sans-serif;
+}
+
+.divide_col2 {
+  float: left;
+  width: 50%;
+  height: 100%;
+}
+
+#ts_title2 {
+  margin-left: -40px;
+}
+
+#ts_canvas2 {
+  margin-left: -40px;
+}
+
+#farm_selection,
+#manager_selection {
+  position: absolute;
+  top: 5px;
+  left: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.tooltip {
+  position: absolute;
+  line-height: 1;
+  font-family: 'Lucida Grande', sans-serif;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+  font-size: 12px;
+  text-align: left;
+  opacity: 0;
+}
+
+.colorbar {
+  margin-top: 20px;
+  height: 100px;
+  width: 20px;
+  margin-right: 20px;
+}
+
+.ts_title {
+  float: right;
+  position: relative;
+  top: 12%;
+  left: 50%;
+  transform: translate(-55%, -50%);
+  font-family: 'Lucida Grande', sans-serif;
+}
+
+.ts_canvas {
+  float: left;
+  position: relative;
+  width: 80%;
+  height: 80%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-55%, -50%);
+  border-style: solid;
+  border-width: thin;
+  border-color: #DDDDDD;
+}
+
+#ts_legend {
+  position: absolute;
+  width: 70px;
+  height: 180px;
+  right: 10px;
+  bottom: 2px;
+  z-index: 10;
+}
+
+#heatmap_legend {
+  position: relative;
+}
+
+/* #farm_legend {
+  position: relative;
+  width: 200px;
+  height: 40px;
+  right: 2px;
+  bottom: 2px;
+  z-index: 10;
+} */
+
+#manager_legend {
+  position: relative;
+  width: 200px;
+  height: 40px;
+  right: 2px;
+  bottom: 2px;
+  z-index: 10;
+}
+
+#node_options {
+  position: relative;
+  width: 220px;
+  height: 150px;
+  margin-right: 20px;
+  padding: 5px;
+  top: 25%;
+  border: 1px solid;
+  border-radius: 2px;
+  overflow: scroll;
+}
+
+#ts-container {
+  width: 100%;
+  height: 100%;
+  /* overflow-y: scroll; */
+  /* margin-left: 20px; */
+}
+
+#ts_view {
+  float: left;
+  position: relative;
+  display: flex;
+  flex-direction:column;
+  width: 100%;
+  height: 50%;
+  padding-top: 0px;
+  border-style: solid;
+  border-width: thin;
+  border-color: #DDDDDD;
+  margin-right: 0px;
+}
+
+#data_selection {
+  width:15%;
+}
+
+.selection input[type="checkbox"] {
+  display: none;
+}
+
+.selection input[type="checkbox"]+label {
+  display: none;
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  padding-bottom: 4px;
+  padding-left: 20px;
+  padding-right: 5px;
+}
+
+.selection input[type="checkbox"]+label::before {
+  content: "";
+  position: absolute;
+  display: block;
+  box-sizing: border-box;
+  width: 11px;
+  height: 11px;
+  margin-top: -7px;
+  left: 5px;
+  top: 50%;
+  border: 1px solid;
+  border-radius: 2px;
+  /* border-color: #88888; */
+  background-color: #ffffff;
+}
+
+.selection input[type="checkbox"]:checked+label::after {
+  content: "";
+  position: absolute;
+  display: block;
+  box-sizing: border-box;
+  width: 8px;
+  height: 5px;
+  margin-top: -6px;
+  top: 50%;
+  left: 7px;
+  transform: rotate(-45deg);
+  border-bottom: 2px solid;
+  border-left: 2px solid;
+  border-color: #585753;
+}
+
+#grid-selection {
+  display: inline-block;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  left: 7px;
+  width: 24px;
+  height: 12px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 8px;
+  width: 8px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+/* input:checked+.slider {
+  background-color: #2196F3;
+}
+
+input:focus+.slider {
+  box-shadow: 0 0 1px #2196F3;
+} */
+
+input:checked+.slider:before {
+  -webkit-transform: translateX(12px);
+  -ms-transform: translateX(12px);
+  transform: translateX(12px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 20px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
+/*lasso css below*/
+.lasso path {
+  stroke: rgb(80, 80, 80);
+  stroke-width: 2px;
+}
+
+.lasso .drawn {
+  fill-opacity: .05;
+}
+
+.lasso .loop_close {
+  fill: none;
+  stroke-dasharray: 4, 4;
+}
+
+.lasso .origin {
+  fill: #3399FF;
+  fill-opacity: .5;
+}
+
+.label-text {
+  margin-left: 10px;
+}
+
+div.tooltip-module {
+  position: absolute;
+  text-align: center;
+  width: 128px;
+  height: 30px;
+  padding: 2px;
+  font-family: Lucida Grande, Serif;
+  font-size: 12px;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+}
+
+.button-container {
+  position: relative;
+  display: inline-block;
+  margin-left:20px;
+}
+
+button {
+  border: none;
+  color: white;
+  right: 2px;
+  padding-top: 1px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 6px;
+  margin-bottom: 10px;
+  font-size: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.left-button {
+  background-color: #8292af;
+}
+
+.left-button:hover {
+  background-color: #687996;
+}
+
+.right-button {
+  background-color: #8fbcb4;
+}
+
+.right-button:hover {
+  background-color: #78a39b;
+}

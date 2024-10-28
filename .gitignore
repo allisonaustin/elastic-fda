@@ -1,0 +1,6 @@
+package-lock.json
+.DS_STORE
+
+node_modules/
+
+server/data
