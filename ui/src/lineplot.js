@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import axios from 'axios';
-import { pallette, percentColToD3Rgb } from './colors.js';
+import { pallette, scale, percentColToD3Rgb } from './colors.js';
 import { isEmpty, debounce, isUndefined } from 'lodash';
 
 const margin = { left: 50, right: 30, top: 20, bottom: 30 }
@@ -11,10 +11,13 @@ let x2;
 let y1;
 let y2;
 let svgdata = []
+let depths = []
+let labels = []
 
+let defaultColor = pallette.lightgray;
 let colorScale = d3.scaleOrdinal()
     .domain([0, 1, 2])
-    .range([pallette.blue, pallette.green, pallette.purple].map(percentColToD3Rgb));
+    .range([pallette.blue, pallette.purple].map(percentColToD3Rgb));
 
 const onResize = (targets) => {
     targets.forEach(target => {
@@ -26,6 +29,33 @@ const onResize = (targets) => {
             focusView(svgdata)
         }
     })
+}
+
+function getLineColor(measurement) {
+    const index = Object.values(labels.measurement).indexOf(measurement);
+    if (index !== -1) {
+        if (labels.amp[index]) return pallette.red;
+        if (labels.phs[index]) return pallette.green;
+    }
+    return defaultColor; 
+}
+
+function getLineProperties(measurement) {
+    const index = Object.values(labels.measurement).indexOf(measurement);
+    let color = defaultColor; 
+    let opacity = 0.3; 
+
+    if (index !== -1) {
+        if (labels.amp[index]) {
+            color = pallette.red;
+            opacity = 1; 
+        }
+        if (labels.phs[index]) {
+            color = pallette.green;
+            opacity = 1; 
+        }
+    }
+    return { color, opacity }; 
 }
 
 function processData(data) {
@@ -64,7 +94,10 @@ const chartObserver = new ResizeObserver(debounce(onResize, 100))
 export function mountChart(chartdata) { // registering this element to watch its size change
     let chartContainer = document.querySelector('#ts-container')
     chartObserver.observe(chartContainer)
-    svgdata = chartdata
+    svgdata = chartdata.data
+    depths = chartdata.depths
+    labels = chartdata.labels
+    console.log(labels)
 }
 
 // https://observablehq.com/@thetylerwolf/day-16-zoomable-area-chart
@@ -108,7 +141,9 @@ export function focusView(data) {
             .attr('class', 'line')
             .attr('clip-path', 'url(#clip)')
             .style('fill', 'none')
-            .style('stroke', (d, i) => d3.schemeCategory10[i % 10])
+            // .style('stroke', (d, i) => d3.schemeCategory10[i % 10])
+            .style('stroke', (d) => getLineColor(d[0]))
+            .style('opacity', (d) => getLineProperties(d[0]))
             .attr('d', d => line(d[1]))
 
     focus.append('g')
@@ -143,13 +178,6 @@ function contextView(data, grouped) {
     const context = chartContainer.append('g')
       .attr('class', 'context')
       .attr('transform', `translate(${ margin.left },${ size.height1 + size.height2 - margin.bottom - margin.top })`)
-  
-    context.append('path')
-        .datum( data )
-        .attr('class', 'line')
-        .style('fill', 'none')
-        .style('stroke', colorScale(0))
-        .attr('d', line2)
 
     context.selectAll('.line')
         .data(grouped)
@@ -158,7 +186,9 @@ function contextView(data, grouped) {
             .attr('class', 'line')
             .attr('clip-path', 'url(#clip)')
             .style('fill', 'none')
-            .style('stroke', (d, i) => d3.schemeCategory10[i % 10])
+            // .style('stroke', (d, i) => d3.schemeCategory10[i % 10])
+            .style('stroke', (d) => getLineColor(d[0]))
+            .style('opacity', (d) => getLineProperties(d[0]))
             .attr('d', d => line2(d[1]))
 
     context.append('g')

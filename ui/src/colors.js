@@ -5,6 +5,23 @@ export const percentColToD3Rgb = percentCol => {
 
 export const pallette = {
     blue: [0.31, 0.48, 0.65],
-    green: [0.36, 0.63, 0.32],
     purple: [0.345, 0.24, 0.315],
+    lightgray: '#9499a0',
+    red: '#B85B68',
+    green: '#BC7B4F',
+    lightblue: '#91a7c6',
+}
+
+export const scale = {
+    0: '#443665',
+    1: '#49457E',
+    2: '#535C96',
+    3: '#637CAE',
+    4: '#72A0C5',
+    5: '#84BBCE',
+    6: '#96D2D7',
+    7: '#A8DFD9',
+    8: '#BBE7D9',
+    9: '#CEEEDE',
+    10:'#E1F5E8'
 }

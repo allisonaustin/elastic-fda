@@ -9,7 +9,7 @@ async function getData(filename) {
       throw new Error('Error getting data.');
     }
     const data = await res.json();
-    return data.data
+    return data
   } catch (error) {
     console.error('Error:', error);
   }
@@ -23,7 +23,7 @@ async function mount(file) {
 async function updateChart(file) {
   const timeSeriesData = await getData(file);
   mountChart(timeSeriesData)
-  focusView(timeSeriesData)
+  focusView(timeSeriesData.data)
 }
 
 function init() {
