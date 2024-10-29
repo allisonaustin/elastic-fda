@@ -33,12 +33,11 @@ function processData(data) {
     data.forEach(d => {
         (Object.keys(d)).forEach((c) => {
             if (c != 'timestamp') {
-                let Obj = { 
+                processed.push({ 
                     timestamp: d3.timeParse('%Y-%m-%d %H:%M:%S')(d.timestamp),
                     value: +d[c],
                     measurement: c,
-                };
-                processed.push(Obj)
+                });
             }
         })
     })
@@ -71,8 +70,12 @@ export function mountChart(chartdata) { // registering this element to watch its
 // https://observablehq.com/@thetylerwolf/day-16-zoomable-area-chart
 export function focusView(data) {
     d3.select('#line-svg').selectAll('*').remove()
+
     data = processData(svgdata)
+    const grouped = d3.group(data, d => d.measurement)
+
     size = { width: 700, height1: 250, height2: 100 }
+    
     const format = d3.format(",.0f");
 
     x1 = d3.scaleTime()
@@ -83,7 +86,7 @@ export function focusView(data) {
       .domain([d3.min(data, function(d) { return +d.value }), d3.max(data, function(d) { return +d.value; })])
       .range([ size.height1, 0 ]);
 
-    let line = d3.line()
+    const line = d3.line()
         .x(function(d) { return x1(d.timestamp) })
         .y(function(d) { return y1(+d.value) })
 
@@ -98,14 +101,15 @@ export function focusView(data) {
         .attr('class', 'focus')
         .attr('transform', `translate(${margin.left},${margin.top})`)
     
-    focus.append('path')
-        .datum(data)
-        .attr('class', 'line')
-        .attr('clip-path', 'url(#clip)')
-        .style('fill', 'none')
-        .style('stroke', colorScale(0))
-        // .style('stroke-width', 3)
-        .attr('d', line)
+    focus.selectAll('.line')
+        .data(grouped)
+        .enter()
+            .append('path')
+            .attr('class', 'line')
+            .attr('clip-path', 'url(#clip)')
+            .style('fill', 'none')
+            .style('stroke', (d, i) => d3.schemeCategory10[i % 10])
+            .attr('d', d => line(d[1]))
 
     focus.append('g')
         .attr('class', 'x-axis')
@@ -117,15 +121,13 @@ export function focusView(data) {
     focus.append('g')
         .attr('class', 'y-axis')
         .call(d3.axisLeft(y1))
-        .select('.domain')
-        .remove()
+        // .select('.domain')
+        // .remove()
 
-    contextView(data)
+    contextView(data, grouped)
 }
 
-function contextView(data) {
-    console.log(data)
-
+function contextView(data, grouped) {
     x2 = d3.scaleTime()
         .domain(d3.extent(data, function(d) { return d.timestamp }))
         .range([ 0, size.width ]);
@@ -149,6 +151,16 @@ function contextView(data) {
         .style('stroke', colorScale(0))
         .attr('d', line2)
 
+    context.selectAll('.line')
+        .data(grouped)
+        .enter()
+            .append('path')
+            .attr('class', 'line')
+            .attr('clip-path', 'url(#clip)')
+            .style('fill', 'none')
+            .style('stroke', (d, i) => d3.schemeCategory10[i % 10])
+            .attr('d', d => line2(d[1]))
+
     context.append('g')
         .attr('class', 'x-axis')
         .attr('transform',  `translate(0,${ size.height2 })`)
@@ -169,11 +181,12 @@ function contextView(data) {
     ]
 
     const brush = d3.brushX(x2)
-        .extent([[0, 20 ], [size.width, size.height2 ]])
+        .extent([[0, 20 ], [size.width, size.height2 + margin.top]])
         .on('brush', brushed)
     
     context.append('g')
         .attr('class', 'x-brush')
+        .attr('transform', `translate(0, ${-margin.top})`)
         .call(brush)
         .call(brush.move, defaultWindow)
 }
@@ -184,12 +197,13 @@ function brushed(event) {
 
         x1.domain(extent);
 
-        d3.select(chartContainer.node()).select('.focus path.line').attr('d', d3.line()
+        d3.selectAll('.focus .line').attr('d', d => d3.line()
             .x(d => x1(d.timestamp))
-            .y(d => y1(+d.value))
+            .y(d => y1(d.value))
+            (d[1]) 
         );
 
-        d3.select(chartContainer.node()).select('.focus .x-axis').call(d3.axisBottom(x1));
+        d3.select('.focus .x-axis').call(d3.axisBottom(x1));
     }
 }
 
