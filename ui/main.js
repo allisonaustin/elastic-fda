@@ -1,4 +1,4 @@
-import { mountChart, initChart } from './src/lineplot.js'
+import { mountChart, focusView } from './src/lineplot.js'
 import './styles/main.css'
 
 async function getData(filename) {
@@ -23,7 +23,7 @@ async function mount(file) {
 async function updateChart(file) {
   const timeSeriesData = await getData(file);
   mountChart(timeSeriesData)
-  initChart(timeSeriesData)
+  focusView(timeSeriesData)
 }
 
 function init() {
