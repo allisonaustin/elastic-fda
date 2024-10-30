@@ -13,6 +13,7 @@ let y2;
 let svgdata = []
 let depths = []
 let labels = []
+let viewType = 0;
 
 let defaultColor = pallette.lightgray;
 let legendColors = {
@@ -36,15 +37,6 @@ const onResize = (targets) => {
     })
 }
 
-function getLineColor(measurement) {
-    const index = Object.values(labels.measurement).indexOf(measurement);
-    if (index !== -1) {
-        if (labels.amp[index]) return pallette.red;
-        if (labels.phs[index]) return pallette.green;
-    }
-    return defaultColor; 
-}
-
 function getLineProperties(measurement) {
     const index = Object.values(labels.measurement).indexOf(measurement);
     let color = defaultColor; 
@@ -53,12 +45,12 @@ function getLineProperties(measurement) {
 
     if (index !== -1) {
         if (labels.amp[index]) {
-            color = pallette.red;
+            color = pallette.green;
             opacity = 1;
             width = 1.2; 
         }
         if (labels.phs[index]) {
-            color = pallette.green;
+            color = pallette.pink;
             opacity = 1; 
             width = 1.2;
         }
@@ -82,29 +74,15 @@ function processData(data) {
     return processed;
 }
 
-function groupBy(arr, property) {
-    return arr.reduce(function (acc, obj) {
-        let key = obj[property];
-
-        if (key != null && key !== undefined) {
-            if (!acc[key]) {
-                acc[key] = [];
-            }
-            acc[key].push(obj);
-        }
-
-        return acc;
-    }, {});
-}
-
 const chartObserver = new ResizeObserver(debounce(onResize, 100))
 
-export function mountChart(chartdata) { // registering this element to watch its size change
+export function mountChart(chartdata, viewType) { // registering this element to watch its size change
     let chartContainer = document.querySelector('#ts-container')
     chartObserver.observe(chartContainer)
     svgdata = chartdata.data
     depths = chartdata.depths
     labels = chartdata.labels
+    viewType = viewType
 }
 
 // https://observablehq.com/@thetylerwolf/day-16-zoomable-area-chart
@@ -176,10 +154,9 @@ export function focusView(data) {
             .attr('class', 'line')
             .attr('clip-path', 'url(#clip)')
             .style('fill', 'none')
-            // .style('stroke', (d, i) => d3.schemeCategory10[i % 10])
-            .style('stroke', (d) => getLineColor(d[0]))
-            .style('opacity', (d) => getLineProperties(d[0]).opacity)
-            .style('stroke-width', (d) => getLineProperties(d[0]).width)
+            .style('stroke', (d, i) => viewType == 0 ? d3.schemeCategory10[i % 10] : getLineProperties(d[0]).color)
+            .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
+            .style('stroke-width', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).width)
             .attr('d', d => line(d[1]))
 
     focus.append('g')
@@ -222,10 +199,9 @@ function contextView(data, grouped) {
             .attr('class', 'line')
             .attr('clip-path', 'url(#clip)')
             .style('fill', 'none')
-            // .style('stroke', (d, i) => d3.schemeCategory10[i % 10])
-            .style('stroke', (d) => getLineColor(d[0]))
-            .style('opacity', (d) => getLineProperties(d[0]).opacity)
-            .style('stroke-width', (d) => getLineProperties(d[0]).width)
+            .style('stroke', (d, i) => viewType == 0 ? d3.schemeCategory10[i % 10] : getLineProperties(d[0]).color)
+            .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
+            .style('stroke-width', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).width)
             .attr('d', d => line2(d[1]))
 
     context.append('g')
@@ -272,6 +248,19 @@ function brushed(event) {
 
         d3.select('.focus .x-axis').call(d3.axisBottom(x1));
     }
+}
+
+export function changeView(type) {
+    viewType = type
+    d3.selectAll('.focus .line')
+        .style('stroke', (d, i) => viewType == 0 ? d3.schemeCategory10[i % 10] : getLineProperties(d[0]).color)
+        .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
+        .style('stroke-width', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).width)
+    
+    d3.selectAll('.context .line')
+        .style('stroke', (d, i) => viewType == 0 ? d3.schemeCategory10[i % 10] : getLineProperties(d[0]).color)
+        .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
+        .style('stroke-width', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).width)
 }
 
 

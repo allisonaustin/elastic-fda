@@ -8,8 +8,11 @@ export const pallette = {
     purple: [0.345, 0.24, 0.315],
     lightgray: '#9499a0',
     red: '#B85B68',
-    green: '#BC7B4F',
+    green: '#457500',
+    orange: '#DA7400',
+    pink: '#DA73A1',
     lightblue: '#91a7c6',
+    gray: '#b5c2d5'
 }
 
 export const scale = {

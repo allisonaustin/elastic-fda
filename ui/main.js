@@ -1,4 +1,4 @@
-import { mountChart, focusView } from './src/lineplot.js'
+import { mountChart, focusView, changeView } from './src/lineplot.js'
 import './styles/main.css'
 
 async function getData(filename) {
@@ -15,21 +15,41 @@ async function getData(filename) {
   }
 }
 
-async function mount(file) {
+async function mount(file, viewType) {
   const timeSeriesData = await getData(file);
-  mountChart(timeSeriesData)
+  mountChart(timeSeriesData, viewType)
 }
 
 async function updateChart(file) {
   const timeSeriesData = await getData(file);
-  mountChart(timeSeriesData)
+  let viewType = document.querySelector('.active').value;
+  mountChart(timeSeriesData, viewType)
   focusView(timeSeriesData.data)
+}
+
+function updateViewType(viewType) {
+  changeView(viewType);
 }
 
 function init() {
   let filename = document.getElementById('data_selection').value;
-  mount(filename);
+  let viewType = document.querySelector('.active').value;
+  mount(filename, viewType);
 }
+
+function toggleButton(button) {
+  document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+  button.classList.add('active');
+  updateViewType(button.value);
+}
+
+document.getElementById('btn1').addEventListener('click', function() {
+  toggleButton(this);
+});
+
+document.getElementById('btn2').addEventListener('click', function() {
+  toggleButton(this);
+});
 
 window.update = () => {
   let filename = document.getElementById('data_selection').value;
