@@ -20,7 +20,8 @@ def get_data(filename):
     end = round(len(df) * 0.5)
 
     # removing timestamp column for computing amplitude and phase depths
-    values_df = df.drop('timestamp', axis=1)
+    values_df = df.drop('timestamp', axis=1) \
+        .apply(pd.to_numeric, errors='coerce')
     F = values_df.loc[start:end].to_numpy()
     depths = StreamingDepth(F)
     elastic_out = depths.elastic_outliers()

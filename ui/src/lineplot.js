@@ -15,6 +15,11 @@ let depths = []
 let labels = []
 
 let defaultColor = pallette.lightgray;
+let legendColors = {
+    amplitude: pallette.red,
+    phase: pallette.green
+}
+
 let colorScale = d3.scaleOrdinal()
     .domain([0, 1, 2])
     .range([pallette.blue, pallette.purple].map(percentColToD3Rgb));
@@ -43,19 +48,22 @@ function getLineColor(measurement) {
 function getLineProperties(measurement) {
     const index = Object.values(labels.measurement).indexOf(measurement);
     let color = defaultColor; 
-    let opacity = 0.3; 
+    let opacity = 0.55; 
+    let width = 1;
 
     if (index !== -1) {
         if (labels.amp[index]) {
             color = pallette.red;
-            opacity = 1; 
+            opacity = 1;
+            width = 1.2; 
         }
         if (labels.phs[index]) {
             color = pallette.green;
             opacity = 1; 
+            width = 1.2;
         }
     }
-    return { color, opacity }; 
+    return { color, opacity, width }; 
 }
 
 function processData(data) {
@@ -97,7 +105,6 @@ export function mountChart(chartdata) { // registering this element to watch its
     svgdata = chartdata.data
     depths = chartdata.depths
     labels = chartdata.labels
-    console.log(labels)
 }
 
 // https://observablehq.com/@thetylerwolf/day-16-zoomable-area-chart
@@ -106,10 +113,38 @@ export function focusView(data) {
 
     data = processData(svgdata)
     const grouped = d3.group(data, d => d.measurement)
-
-    size = { width: 700, height1: 250, height2: 100 }
     
     const format = d3.format(",.0f");
+    size = { width: 650, height1: 250, height2: 100 }
+
+    // legend
+    const legend = chartContainer.append('g')
+        .attr('class', 'legend')
+        .attr('transform', `translate(${size.width + margin.left + 20}, ${margin.top})`);
+
+    legend.append('text')
+        .attr('x', 0)
+        .attr('y', 0)
+        .text("Outliers")
+        .style('text-anchor', 'start')
+        .style('alignment-baseline', 'middle');
+
+    Object.keys(legendColors).forEach((label, index) => {
+        const legendRow = legend.append('g')
+            .attr('transform', `translate(0, ${index * 20 + 10})`);
+
+        legendRow.append('rect')
+            .attr('width', 10)
+            .attr('height', 10)
+            .attr('fill', legendColors[label]);
+
+        legendRow.append('text')
+            .attr('x', 15)
+            .attr('y', 5)
+            .text(label)
+            .style('text-anchor', 'start')
+            .style('alignment-baseline', 'middle');
+    });
 
     x1 = d3.scaleTime()
       .domain(d3.extent(data, function(d) { return d.timestamp }))
@@ -143,7 +178,8 @@ export function focusView(data) {
             .style('fill', 'none')
             // .style('stroke', (d, i) => d3.schemeCategory10[i % 10])
             .style('stroke', (d) => getLineColor(d[0]))
-            .style('opacity', (d) => getLineProperties(d[0]))
+            .style('opacity', (d) => getLineProperties(d[0]).opacity)
+            .style('stroke-width', (d) => getLineProperties(d[0]).width)
             .attr('d', d => line(d[1]))
 
     focus.append('g')
@@ -188,7 +224,8 @@ function contextView(data, grouped) {
             .style('fill', 'none')
             // .style('stroke', (d, i) => d3.schemeCategory10[i % 10])
             .style('stroke', (d) => getLineColor(d[0]))
-            .style('opacity', (d) => getLineProperties(d[0]))
+            .style('opacity', (d) => getLineProperties(d[0]).opacity)
+            .style('stroke-width', (d) => getLineProperties(d[0]).width)
             .attr('d', d => line2(d[1]))
 
     context.append('g')
