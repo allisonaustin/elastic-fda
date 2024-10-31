@@ -281,4 +281,19 @@ export function changeView(type) {
     }
 }
 
+export function updateLabels(chartdata) {
+    depths = chartdata.depths
+    labels = chartdata.labels
+
+    // updating line properties for focus and context views
+    d3.selectAll('.focus .line')
+        .style('stroke', (d, i) => viewType == 0 ? d3.schemeCategory10[i % 10] : getLineProperties(d[0]).color)
+        .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
+        .style('stroke-width', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).width)
+    
+    d3.selectAll('.context .line')
+        .style('stroke', (d, i) => viewType == 0 ? d3.schemeCategory10[i % 10] : getLineProperties(d[0]).color)
+        .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
+        .style('stroke-width', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).width)
+}
 

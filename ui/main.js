@@ -1,4 +1,4 @@
-import { mountChart, focusView, changeView } from './src/lineplot.js'
+import { mountChart, focusView, changeView, updateLabels } from './src/lineplot.js'
 import './styles/main.css'
 
 async function getData(filename) {
@@ -102,6 +102,6 @@ async function submitDepthParams(event) {
   // change in defaults
   if ((kValue != 1.5) || (thresholdValue != 0.5)) {
     const timeSeriesData = await computeOutliers(kValue, thresholdValue)
-    console.log(timeSeriesData)
+    updateLabels(timeSeriesData)
   }
 }
