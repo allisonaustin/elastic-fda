@@ -19,17 +19,24 @@
         <div class='view_title'>Time Series View</div>
          <!-- Data select -->
          <select id="data_selection" onchange="update()">
-          <option value="k_data.csv">k_data.csv</option>
-          <option value="hpc_oda_1.csv">hpc_oda_1.csv</option>
-          <option value="hpc_oda_2.csv">hpc_oda_2.csv</option>
-          <option value="hpc_oda_3.csv">hpc_oda_3.csv</option>
-          <option value="hpc_oda_4.csv" selected>hpc_oda_4.csv</option>
-        </select>
-        <!-- View select-->
-        <div id="button-container">
-          <button id="btn1" class="toggle-btn active" value="0">Normal View</button>
-          <button id="btn2" class="toggle-btn" value="1">Outlier View</button>
-        </div>
+            <option value="k_data.csv">k_data.csv</option>
+            <option value="hpc_oda_1.csv">hpc_oda_1.csv</option>
+            <option value="hpc_oda_2.csv">hpc_oda_2.csv</option>
+            <option value="hpc_oda_3.csv">hpc_oda_3.csv</option>
+            <option value="hpc_oda_4.csv" selected>hpc_oda_4.csv</option>
+          </select>
+          <!-- View select-->
+          <div id="button-container">
+            <button id="btn1" class="toggle-btn active" value="0">Normal View</button>
+            <button id="btn2" class="toggle-btn" value="1">Outlier View</button>
+          </div>
+          <div id="depth-config">
+            <form type="submit" id="depth-params">
+              K<input type="number" class="num-input" value="1.5" style="width:40px;margin-left:2px;"><br>
+              Threshold<input type="number" class="num-input" value="0.5" style="width:40px;margin-left:2px;"><br>
+              <input class="compute-btn" type="submit" value="Compute"></input>
+            </form>
+          </div>
           <div id='ts-container'>
             <svg id='line-svg' width='100%' height='100%'>
             </svg>

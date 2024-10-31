@@ -41,6 +41,12 @@ function toggleButton(button) {
   document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
   button.classList.add('active');
   updateViewType(button.value);
+
+  if (button.value == 0) {
+    document.getElementById('depth-config').style.display = 'none';
+  } else if (button.value == 1) {
+    document.getElementById('depth-config').style.display = 'block';
+  }
 }
 
 document.getElementById('btn1').addEventListener('click', function() {
@@ -59,3 +65,7 @@ window.update = () => {
 document.addEventListener('DOMContentLoaded', function () {
   init();
 })
+
+document.getElementsByClassName("num-input").addEventListener("input", function (event) {
+  this.value = this.value.replace(/[^0-9]/g, '');
+});
