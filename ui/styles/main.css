@@ -163,36 +163,6 @@ select {
   border-color: #DDDDDD;
 }
 
-#ts_legend {
-  position: absolute;
-  width: 70px;
-  height: 180px;
-  right: 10px;
-  bottom: 2px;
-  z-index: 10;
-}
-
-#heatmap_legend {
-  position: relative;
-}
-
-/* #farm_legend {
-  position: relative;
-  width: 200px;
-  height: 40px;
-  right: 2px;
-  bottom: 2px;
-  z-index: 10;
-} */
-
-#manager_legend {
-  position: relative;
-  width: 200px;
-  height: 40px;
-  right: 2px;
-  bottom: 2px;
-  z-index: 10;
-}
 
 #node_options {
   position: relative;
@@ -209,8 +179,15 @@ select {
 #ts-container {
   width: 100%;
   height: 100%;
+  display:flex;
+  flex-direction:row;
   /* overflow-y: scroll; */
   /* margin-left: 20px; */
+}
+
+#ts-tab {
+  display:flex;
+  flex-direction:column;
 }
 
 #ts_view {
@@ -230,7 +207,7 @@ select {
 
 #data_selection {
   /* position:absolute; */
-  width:15%;
+  width:18%;
   margin-top: 5px;
   margin-left: 5px;
 }
@@ -391,9 +368,10 @@ div.tooltip-module {
 }
 
 #depth-config {
-  position: absolute;
-  margin-left: 200px;
+  /* position: absolute;
+  margin-left: 200px; */
   display:none;
+  position:relative;
 }
 
 button {

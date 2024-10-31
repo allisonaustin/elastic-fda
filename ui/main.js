@@ -15,6 +15,20 @@ async function getData(filename) {
   }
 }
 
+async function computeOutliers(k, threshold) {
+  const flaskUrl = `http://127.0.0.1:5001/getOutliers/${k}/${threshold}`;
+  try {
+    const res = await fetch(flaskUrl);
+    if (!res.ok) {
+      throw new Error('Error getting data.');
+    }
+    const data = await res.json();
+    return data
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
 async function mount(file, viewType) {
   const timeSeriesData = await getData(file);
   mountChart(timeSeriesData, viewType)
@@ -34,6 +48,13 @@ function updateViewType(viewType) {
 function init() {
   let filename = document.getElementById('data_selection').value;
   let viewType = document.querySelector('.active').value;
+  
+  if (viewType == 0) {
+    document.getElementById('depth-config').style.display = 'none';
+  } else if (viewType == 1) {
+    document.getElementById('depth-config').style.display = 'block';
+  }
+
   mount(filename, viewType);
 }
 
@@ -66,6 +87,21 @@ document.addEventListener('DOMContentLoaded', function () {
   init();
 })
 
-document.getElementsByClassName("num-input").addEventListener("input", function (event) {
-  this.value = this.value.replace(/[^0-9]/g, '');
-});
+// document.getElementsByClassName("num-input").addEventListener("input", function (event) {
+//   this.value = this.value.replace(/[^0-9]/g, '');
+// });
+
+document.getElementById("depth-params").addEventListener("submit", submitDepthParams);
+
+async function submitDepthParams(event) {
+  event.preventDefault();
+
+  const kValue = document.getElementById('k-input').value;
+  const thresholdValue = document.getElementById('threshold-input').value;
+
+  // change in defaults
+  if ((kValue != 1.5) || (thresholdValue != 0.5)) {
+    const timeSeriesData = await computeOutliers(kValue, thresholdValue)
+    console.log(timeSeriesData)
+  }
+}

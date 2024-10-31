@@ -10,20 +10,37 @@ cors = CORS(app)
 
 df = pd.DataFrame()
 depths = StreamingDepth()
+fname = ''
 
 @app.route("/getData/<filename>")
 def get_data(filename):
+    global fname 
+    global df 
+
+    fname = filename
     df = pd.read_csv('./data/'+filename)
     df = df.replace({np.nan: None})
 
-    start = round(len(df) * 0.3)
-    end = round(len(df) * 0.5)
+    return get_outliers()
 
-    # removing timestamp column for computing amplitude and phase depths
+
+@app.route("/getOutliers/<k>/<threshold>")
+def get_outliers(k=1.5, threshold=0.5, start=None, end=None):
+    global df 
+    global depths
+
+    if (start == None):
+        start = round(len(df) * 0.3)
+    if (end == None):
+        end = round(len(df) * 0.5)
+
     values_df = df.drop('timestamp', axis=1) \
         .apply(pd.to_numeric, errors='coerce')
+    
     F = values_df.loc[start:end].to_numpy()
     depths = StreamingDepth(F)
+    depths.k = float(k)
+    depths.threshold = float(threshold)
     elastic_out = depths.elastic_outliers()
 
     depths_df = pd.DataFrame(elastic_out.depths)

@@ -13,7 +13,7 @@ let y2;
 let svgdata = []
 let depths = []
 let labels = []
-let viewType = 0;
+let viewType = 1;
 
 let defaultColor = pallette.lightgray;
 let legendColors = {
@@ -86,9 +86,10 @@ export function mountChart(chartdata, viewType) { // registering this element to
 }
 
 function addLegend() {
-    const legend = chartContainer.append('g')
+    const legend = d3.select("#ts_legend")
+        .append('g')
         .attr('class', 'legend')
-        .attr('transform', `translate(${size.width + margin.left + 20}, ${margin.top})`);
+        .attr('transform', `translate(0, ${margin.top})`);
 
     legend.append('text')
         .attr('x', 0)
@@ -122,6 +123,7 @@ function removeLegend() {
 
 // https://observablehq.com/@thetylerwolf/day-16-zoomable-area-chart
 export function focusView(data) {
+
     d3.select('#line-svg').selectAll('*').remove()
 
     data = processData(svgdata)
