@@ -74,6 +74,14 @@ function processData(data) {
     return processed;
 }
 
+function formatTick(d) {
+    if (Math.abs(d) < 1000) {
+        return d3.format(".2f")(d);
+    } else {
+        return d3.format(".2e")(d).replace(/e\+0$/, '');
+    }
+}
+
 const chartObserver = new ResizeObserver(debounce(onResize, 100))
 
 export function mountChart(chartdata, viewType) { // registering this element to watch its size change
@@ -83,6 +91,10 @@ export function mountChart(chartdata, viewType) { // registering this element to
     depths = chartdata.depths
     labels = chartdata.labels
     viewType = viewType
+
+    if (viewType == 1) {
+        addLegend();
+    }
 }
 
 function addLegend() {
@@ -132,10 +144,6 @@ export function focusView(data) {
     const format = d3.format(",.0f");
     size = { width: 650, height1: 250, height2: 100 }
 
-    if (viewType == 1) {
-        addLegend();
-    }
-
     x1 = d3.scaleTime()
       .domain(d3.extent(data, function(d) { return d.timestamp }))
       .range([ 0, size.width ]);
@@ -180,7 +188,7 @@ export function focusView(data) {
 
     focus.append('g')
         .attr('class', 'y-axis')
-        .call(d3.axisLeft(y1))
+        .call(d3.axisLeft(y1).tickFormat(formatTick));
         // .select('.domain')
         // .remove()
 
@@ -222,7 +230,7 @@ function contextView(data, grouped) {
         .call( d3.axisBottom(x2) )
 
     context.append("g")
-        .call(d3.axisLeft(y2));
+        .call(d3.axisLeft(y2).tickFormat(formatTick));
 
     context.append('g')
         .attr('class', 'x-brush')

@@ -12,8 +12,8 @@ df = pd.DataFrame()
 depths = StreamingDepth()
 fname = ''
 
-@app.route("/getData/<filename>")
-def get_data(filename):
+@app.route("/getData/<filename>/<k>/<threshold>")
+def get_data(filename, k, threshold):
     global fname 
     global df 
 
@@ -21,7 +21,9 @@ def get_data(filename):
     df = pd.read_csv('./data/'+filename)
     df = df.replace({np.nan: None})
 
-    return get_outliers()
+    print('getting amp and phase outliers...k:',k, 'threshold:',threshold)
+
+    return get_outliers(k, threshold)
 
 
 @app.route("/getOutliers/<k>/<threshold>")

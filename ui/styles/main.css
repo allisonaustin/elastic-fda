@@ -188,6 +188,7 @@ select {
 #ts-tab {
   display:flex;
   flex-direction:column;
+  margin-left: 10px;
 }
 
 #ts_view {

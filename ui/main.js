@@ -1,8 +1,8 @@
 import { mountChart, focusView, changeView, updateLabels } from './src/lineplot.js'
 import './styles/main.css'
 
-async function getData(filename) {
-  const flaskUrl = `http://127.0.0.1:5001/getData/${filename}`;
+async function getData(filename, kValue, thresholdValue) {
+  const flaskUrl = `http://127.0.0.1:5001/getData/${filename}/${kValue}/${thresholdValue}`;
   try {
     const res = await fetch(flaskUrl);
     if (!res.ok) {
@@ -30,12 +30,16 @@ async function computeOutliers(k, threshold) {
 }
 
 async function mount(file, viewType) {
-  const timeSeriesData = await getData(file);
+  const kValue = document.getElementById('k-input').value;
+  const thresholdValue = document.getElementById('threshold-input').value;
+  const timeSeriesData = await getData(file, kValue, thresholdValue);
   mountChart(timeSeriesData, viewType)
 }
 
 async function updateChart(file) {
-  const timeSeriesData = await getData(file);
+  const kValue = document.getElementById('k-input').value;
+  const thresholdValue = document.getElementById('threshold-input').value;
+  const timeSeriesData = await getData(file, kValue, thresholdValue);
   let viewType = document.querySelector('.active').value;
   mountChart(timeSeriesData, viewType)
   focusView(timeSeriesData.data)
@@ -103,5 +107,6 @@ async function submitDepthParams(event) {
   if ((kValue != 1.5) || (thresholdValue != 0.5)) {
     const timeSeriesData = await computeOutliers(kValue, thresholdValue)
     updateLabels(timeSeriesData)
+    console.log('updating labels !')
   }
 }
