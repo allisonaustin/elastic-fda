@@ -85,17 +85,7 @@ export function mountChart(chartdata, viewType) { // registering this element to
     viewType = viewType
 }
 
-// https://observablehq.com/@thetylerwolf/day-16-zoomable-area-chart
-export function focusView(data) {
-    d3.select('#line-svg').selectAll('*').remove()
-
-    data = processData(svgdata)
-    const grouped = d3.group(data, d => d.measurement)
-    
-    const format = d3.format(",.0f");
-    size = { width: 650, height1: 250, height2: 100 }
-
-    // legend
+function addLegend() {
     const legend = chartContainer.append('g')
         .attr('class', 'legend')
         .attr('transform', `translate(${size.width + margin.left + 20}, ${margin.top})`);
@@ -123,6 +113,26 @@ export function focusView(data) {
             .style('text-anchor', 'start')
             .style('alignment-baseline', 'middle');
     });
+}
+
+function removeLegend() {
+    d3.select('.legend')
+        .remove();
+}
+
+// https://observablehq.com/@thetylerwolf/day-16-zoomable-area-chart
+export function focusView(data) {
+    d3.select('#line-svg').selectAll('*').remove()
+
+    data = processData(svgdata)
+    const grouped = d3.group(data, d => d.measurement)
+    
+    const format = d3.format(",.0f");
+    size = { width: 650, height1: 250, height2: 100 }
+
+    if (viewType == 1) {
+        addLegend();
+    }
 
     x1 = d3.scaleTime()
       .domain(d3.extent(data, function(d) { return d.timestamp }))
@@ -261,6 +271,12 @@ export function changeView(type) {
         .style('stroke', (d, i) => viewType == 0 ? d3.schemeCategory10[i % 10] : getLineProperties(d[0]).color)
         .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
         .style('stroke-width', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).width)
+
+    if (viewType == 1) {
+        addLegend();
+    } else if (viewType == 0) {
+        removeLegend();
+    }
 }
 
 
