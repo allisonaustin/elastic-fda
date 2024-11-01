@@ -345,11 +345,23 @@ export function updateLabels(chartdata) {
 
     // updating line properties for focus and context views
     d3.selectAll('.focus .line')
+        .attr('class', (d, i) => {
+            let classes = `line line-${d[0].measurement} `;
+            if (labels.amp[i]) classes += 'amplitude';
+            if (labels.phs[i]) classes += 'phase';
+            return classes;
+        })
         .style('stroke', (d, i) => viewType == 0 ? d3.schemeCategory10[i % 10] : getLineProperties(d[0]).color)
         .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
         .style('stroke-width', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).width)
     
     d3.selectAll('.context .line')
+        .attr('class', (d, i) => {
+            let classes = `line line-${d[0].measurement} `;
+            if (labels.amp[i]) classes += 'amplitude';
+            if (labels.phs[i]) classes += 'phase';
+            return classes;
+        })
         .style('stroke', (d, i) => viewType == 0 ? d3.schemeCategory10[i % 10] : getLineProperties(d[0]).color)
         .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
         .style('stroke-width', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).width)

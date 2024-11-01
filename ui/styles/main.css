@@ -271,8 +271,10 @@ select {
   border-color: #585753;
 }
 
-#grid-selection {
-  display: inline-block;
+
+.legend {
+  font-size: 13px;
+  font-family: 'Lucida Grande', sans-serif;
 }
 
 .switch {
