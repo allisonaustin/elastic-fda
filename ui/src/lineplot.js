@@ -48,12 +48,12 @@ function getLineProperties(measurement) {
 
     if (index !== -1) {
         if (labels.amp[index]) {
-            color = pallette.green;
+            color = legendColors.amplitude;
             opacity = 1;
             width = 1.2; 
         }
         if (labels.phs[index]) {
-            color = pallette.pink;
+            color = legendColors.phase;
             opacity = 1; 
             width = 1.2;
         }
@@ -124,7 +124,25 @@ function addLegend() {
 
     Object.keys(legendColors).forEach((label, index) => {
         const legendRow = legend.append('g')
-            .attr('transform', `translate(0, ${index * 20 + 10})`);
+            .attr('transform', `translate(0, ${index * 20 + 10})`)
+            .on('mouseover', () => {
+                d3.selectAll('.focus .line')
+                    .style('opacity', 0.1);
+                d3.selectAll('.context .line')
+                    .style('opacity', 0.1);
+                d3.selectAll(`.focus .${label}`)
+                    .style('opacity', 1);
+    
+                d3.selectAll(`.context .${label}`)
+                    .style('opacity', 1);
+            })
+            .on('mouseout', () => {
+                d3.selectAll('.focus .line')
+                    .style('opacity', 1);
+    
+                d3.selectAll('.context .line')
+                    .style('opacity', 1);
+            });
 
         legendRow.append('rect')
             .attr('width', 10)
@@ -183,7 +201,12 @@ export function focusView(data) {
         .data(grouped)
         .enter()
             .append('path')
-            .attr('class', 'line')
+            .attr('class', (d, i) => {
+                let classes = `line line-${d[0].measurement} `;
+                if (labels.amp[i]) classes += 'amplitude';
+                if (labels.phs[i]) classes += 'phase';
+                return classes;
+            })
             .attr('clip-path', 'url(#clip)')
             .style('fill', 'none')
             .style('stroke', (d, i) => viewType == 0 ? d3.schemeCategory10[i % 10] : getLineProperties(d[0]).color)
@@ -228,7 +251,12 @@ function contextView(data, grouped) {
         .data(grouped)
         .enter()
             .append('path')
-            .attr('class', 'line')
+            .attr('class', (d, i) => {
+                let classes = `line line-${d[0].measurement} `;
+                if (labels.amp[i]) classes += 'amplitude';
+                if (labels.phs[i]) classes += 'phase';
+                return classes;
+            })
             .attr('clip-path', 'url(#clip)')
             .style('fill', 'none')
             .style('stroke', (d, i) => viewType == 0 ? d3.schemeCategory10[i % 10] : getLineProperties(d[0]).color)
