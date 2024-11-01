@@ -21,29 +21,44 @@ def get_data(filename, k, threshold):
     df = pd.read_csv('./data/'+filename)
     df = df.replace({np.nan: None})
 
-    print('getting amp and phase outliers...k:',k, 'threshold:',threshold)
+    # print('getting amp and phase outliers...k:',k, 'threshold:',threshold)
 
     return get_outliers(k, threshold)
 
 
-@app.route("/getOutliers/<k>/<threshold>")
+@app.route("/getOutliers/<k>/<threshold>/<start>/<end>")
 def get_outliers(k=1.5, threshold=0.5, start=None, end=None):
     global df 
     global depths
 
     if (start == None):
-        start = round(len(df) * 0.3)
+        startIdx = round(len(df) * 0.3)
+    else:
+        startIdx = int(start)
     if (end == None):
-        end = round(len(df) * 0.5)
+        endIdx = round(len(df) * 0.5)
+    else:
+        endIdx = int(end)
+
+    if startIdx < 0 or startIdx >= len(df):
+        raise ValueError(f"Start index {start} is out of range. It must be between 0 and {len(df) - 1}.")
+    
+    if endIdx < 0 or endIdx >= len(df):
+        raise ValueError(f"End index {end} is out of range. It must be between 0 and {len(df) - 1}.")
+    
+    if startIdx > endIdx:
+        raise ValueError(f"Start index {start} cannot be greater than end index {end}.")
 
     values_df = df.drop('timestamp', axis=1) \
         .apply(pd.to_numeric, errors='coerce')
     
-    F = values_df.loc[start:end].to_numpy()
+    F = values_df.loc[startIdx:endIdx].to_numpy()
     depths = StreamingDepth(F)
     depths.k = float(k)
     depths.threshold = float(threshold)
     elastic_out = depths.elastic_outliers()
+
+    print('getting amp and phase outliers...k:',k, 'threshold:',threshold, 'start:', startIdx, 'end:', endIdx)
 
     depths_df = pd.DataFrame(elastic_out.depths)
     labels_df = pd.DataFrame(elastic_out.labels)

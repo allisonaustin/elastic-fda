@@ -181,6 +181,7 @@ select {
   height: 100%;
   display:flex;
   flex-direction:row;
+  position:relative;
   /* overflow-y: scroll; */
   /* margin-left: 20px; */
 }
@@ -189,6 +190,7 @@ select {
   display:flex;
   flex-direction:column;
   margin-left: 10px;
+  width:15%
 }
 
 #ts_view {
@@ -206,11 +208,21 @@ select {
   margin-right: 0px;
 }
 
+#line-svg {
+  display: block;
+}
+
 #data_selection {
   /* position:absolute; */
   width:18%;
   margin-top: 5px;
   margin-left: 5px;
+}
+
+.num-input {
+  width:40px;
+  margin-left:2px;
+  margin-top:2px;
 }
 
 .selection input[type="checkbox"] {

@@ -15,6 +15,9 @@ let depths = []
 let labels = []
 let viewType = 1;
 
+export let brushStart;
+export let brushEnd;
+
 let defaultColor = pallette.lightgray;
 let legendColors = {
     amplitude: pallette.red,
@@ -82,6 +85,15 @@ function formatTick(d) {
     }
 }
 
+function findClosestIndex(data, targetTimestamp) {
+    return data.reduce((closestIndex, currentValue, index) => {
+        const currentDiff = Math.abs(currentValue.timestamp - targetTimestamp);
+        const closestDiff = Math.abs(data[closestIndex].timestamp - targetTimestamp);
+        
+        return currentDiff < closestDiff ? index : closestIndex;
+    }, 0);
+}
+
 const chartObserver = new ResizeObserver(debounce(onResize, 100))
 
 export function mountChart(chartdata, viewType) { // registering this element to watch its size change
@@ -142,7 +154,7 @@ export function focusView(data) {
     const grouped = d3.group(data, d => d.measurement)
     
     const format = d3.format(",.0f");
-    size = { width: 650, height1: 250, height2: 100 }
+    size = { width: 700, height1: 250, height2: 100 }
 
     x1 = d3.scaleTime()
       .domain(d3.extent(data, function(d) { return d.timestamp }))
@@ -235,12 +247,12 @@ function contextView(data, grouped) {
     context.append('g')
         .attr('class', 'x-brush')
 
-    const start = Math.floor(data.length * 0.3);
-    const end = Math.floor(data.length * 0.6);
+    brushStart = Math.floor(data.length * 0.3);
+    brushEnd = Math.floor(data.length * 0.6);
 
     const defaultWindow = [
-        x2(data[start].timestamp),
-        x2(data[end].timestamp)
+        x2(data[brushStart].timestamp),
+        x2(data[brushEnd].timestamp)
     ]
 
     const brush = d3.brushX(x2)
@@ -259,6 +271,16 @@ function brushed(event) {
         let extent = event.selection.map(d => x2.invert(d));
 
         x1.domain(extent);
+
+        brushStart = svgdata.findIndex(d => {
+            const timestampDate = new Date(d.timestamp); 
+            return timestampDate >= extent[0]; 
+        });
+
+        brushEnd = svgdata.findIndex(d => {
+            const timestampDate = new Date(d.timestamp);
+            return timestampDate > extent[1]; 
+        }) - 1;
 
         d3.selectAll('.focus .line').attr('d', d => d3.line()
             .x(d => x1(d.timestamp))
