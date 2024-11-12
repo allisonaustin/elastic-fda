@@ -111,6 +111,8 @@ export function mountChart(chartdata, viewType) { // registering this element to
 }
 
 function addLegend() {
+    removeLegend();
+
     const legend = d3.select("#ts_legend")
         .append('g')
         .attr('class', 'legend')
@@ -172,6 +174,11 @@ function hideLegend() {
 
 function showLegend() {
     d3.select('#ts_legend').style('display', 'block');
+}
+
+function removeLegend() {
+    d3.select('.legend')
+        .remove()
 }
 
 // https://observablehq.com/@thetylerwolf/day-16-zoomable-area-chart
@@ -357,6 +364,7 @@ export function changeView(type) {
 }
 
 export function addChips() {
+    removeChips();
     const fsList = document.getElementById('fs-list');
 
     let dataList = Object.keys(depths.amplitude).map(key => ({
@@ -364,7 +372,6 @@ export function addChips() {
         phase: depths.phase[key],
         measurement: depths.measurement[key]
     }));
-    console.log(dataList)
 
     dataList.forEach((item, i) => {
         const chip = document.createElement('div');
@@ -417,6 +424,11 @@ export function hideChips() {
     chips.forEach(chip => {
         chip.style.display = 'none';
     });
+}
+
+export function removeChips() {
+    const chipContainer = document.getElementById('fs-list');
+    chipContainer.innerHTML = '';
 }
 
 export function updateLabels(chartdata) {

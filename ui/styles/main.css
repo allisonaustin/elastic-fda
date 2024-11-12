@@ -402,6 +402,7 @@ div.tooltip-module {
 #depth-config {
   /* position: absolute;
   margin-left: 200px; */
+  top: 10%;
   display:none;
   position:relative;
 }

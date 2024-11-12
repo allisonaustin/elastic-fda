@@ -21,8 +21,6 @@ def get_data(filename, k, threshold):
     df = pd.read_csv('./data/'+filename)
     df = df.replace({np.nan: None})
 
-    # print('getting amp and phase outliers...k:',k, 'threshold:',threshold)
-
     return get_outliers(k, threshold)
 
 
