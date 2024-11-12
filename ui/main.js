@@ -41,7 +41,8 @@ async function mount(file, viewType) {
   previousEnd = Math.floor(timeSeriesData.data.length * 0.6);
 }
 
-async function updateChart(file) {
+// new chart with file change
+async function reloadChart(file) {
   const kValue = document.getElementById('k-input').value;
   const thresholdValue = document.getElementById('threshold-input').value;
   const timeSeriesData = await getData(file, kValue, thresholdValue);
@@ -89,7 +90,7 @@ document.getElementById('btn2').addEventListener('click', function() {
 
 window.update = () => {
   let filename = document.getElementById('data_selection').value;
-  updateChart(filename);
+  reloadChart(filename);
 }
 
 document.addEventListener('DOMContentLoaded', function () {

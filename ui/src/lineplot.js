@@ -43,7 +43,7 @@ const onResize = (targets) => {
 function getLineProperties(measurement) {
     const index = Object.values(labels.measurement).indexOf(measurement);
     let color = defaultColor; 
-    let opacity = 0.55; 
+    let opacity = 0.5; 
     let width = 1;
 
     if (index !== -1) {
@@ -106,6 +106,7 @@ export function mountChart(chartdata, viewType) { // registering this element to
 
     if (viewType == 1) {
         addLegend();
+        addChips();
     }
 }
 
@@ -130,18 +131,25 @@ function addLegend() {
                     .style('opacity', 0.1);
                 d3.selectAll('.context .line')
                     .style('opacity', 0.1);
-                d3.selectAll(`.focus .${label}`)
+           
+                d3.selectAll('.focus .line')
+                    .filter(function() {
+                        return d3.select(this).attr('class').includes(label);
+                    })
                     .style('opacity', 1);
-    
-                d3.selectAll(`.context .${label}`)
+
+                d3.selectAll('.context .line')
+                    .filter(function() {
+                        return d3.select(this).attr('class').includes(label);
+                    })
                     .style('opacity', 1);
             })
             .on('mouseout', () => {
                 d3.selectAll('.focus .line')
-                    .style('opacity', 1);
+                    .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
     
                 d3.selectAll('.context .line')
-                    .style('opacity', 1);
+                    .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
             });
 
         legendRow.append('rect')
@@ -158,9 +166,12 @@ function addLegend() {
     });
 }
 
-function removeLegend() {
-    d3.select('.legend')
-        .remove();
+function hideLegend() {
+    d3.select('#ts_legend').style('display', 'none');
+}
+
+function showLegend() {
+    d3.select('#ts_legend').style('display', 'block');
 }
 
 // https://observablehq.com/@thetylerwolf/day-16-zoomable-area-chart
@@ -172,7 +183,9 @@ export function focusView(data) {
     const grouped = d3.group(data, d => d.measurement)
     
     const format = d3.format(",.0f");
-    size = { width: 700, height1: 250, height2: 100 }
+    size = { width: 650, height1: 250, height2: 100 }
+
+    d3.select('#line-svg').attr('width', size.width + margin.right)
 
     x1 = d3.scaleTime()
       .domain(d3.extent(data, function(d) { return d.timestamp }))
@@ -201,10 +214,11 @@ export function focusView(data) {
         .data(grouped)
         .enter()
             .append('path')
+            .attr('id', (d) => `${d[0]}-focus`)
             .attr('class', (d, i) => {
-                let classes = `line line-${d[0].measurement} `;
-                if (labels.amp[i]) classes += 'amplitude';
-                if (labels.phs[i]) classes += 'phase';
+                let classes = `line `;
+                if (labels.amp[i]) classes += '.amplitude';
+                if (labels.phs[i]) classes += '.phase';
                 return classes;
             })
             .attr('clip-path', 'url(#clip)')
@@ -246,15 +260,16 @@ function contextView(data, grouped) {
     const context = chartContainer.append('g')
       .attr('class', 'context')
       .attr('transform', `translate(${ margin.left },${ size.height1 + size.height2 - margin.bottom - margin.top })`)
-
+    
     context.selectAll('.line')
         .data(grouped)
         .enter()
             .append('path')
+            .attr('id', (d) => `${d[0]}-context`)
             .attr('class', (d, i) => {
-                let classes = `line line-${d[0].measurement} `;
-                if (labels.amp[i]) classes += 'amplitude';
-                if (labels.phs[i]) classes += 'phase';
+                let classes = `line `;
+                if (labels.amp[i]) classes += '.amplitude';
+                if (labels.phs[i]) classes += '.phase';
                 return classes;
             })
             .attr('clip-path', 'url(#clip)')
@@ -333,10 +348,75 @@ export function changeView(type) {
         .style('stroke-width', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).width)
 
     if (viewType == 1) {
-        addLegend();
+        showLegend();
+        showChips();
     } else if (viewType == 0) {
-        removeLegend();
+        hideLegend();
+        hideChips();
     }
+}
+
+export function addChips() {
+    const fsList = document.getElementById('fs-list');
+
+    let dataList = Object.keys(depths.amplitude).map(key => ({
+        amplitude: depths.amplitude[key],
+        phase: depths.phase[key],
+        measurement: depths.measurement[key]
+    }));
+    console.log(dataList)
+
+    dataList.forEach((item, i) => {
+        const chip = document.createElement('div');
+        chip.classList.add('fs_option');
+        chip.textContent = item.measurement;
+
+        chip.addEventListener('mouseover', function() {
+            d3.selectAll('.focus .line')
+                .style('opacity', 0.1);
+            d3.selectAll('.context .line')
+                .style('opacity', 0.1);
+            d3.selectAll(`#${this.textContent}-focus`)
+                .style('opacity', 1);
+            d3.selectAll(`#${this.textContent}-context`)
+                .style('opacity', 1);
+        })
+        chip.addEventListener('mouseout', function () {
+            d3.selectAll('.focus .line')
+                .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
+            d3.selectAll('.context .line')
+                .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
+        });
+        
+        const amplitudePercent = (item.amplitude) * 100;
+        const phasePercent = (item.phase) * 100;
+
+        if (labels.amp[i] && labels.phs[i]) {
+            chip.style.background = `linear-gradient(90deg, ${pallette.red} 50%, ${pallette.green} 50%)`;  // Both amplitude and phase
+        } else if (labels.amp[i]) {
+            chip.style.background = `linear-gradient(90deg, ${pallette.red} 100%, white 100%)`;  // Only amplitude
+        } else if (labels.phs[i]) {
+            chip.style.background = `linear-gradient(90deg, ${pallette.green} 100%, white 100%)`;  // Only phase
+        } else {
+            chip.style.background = ''; 
+        }
+
+        fsList.appendChild(chip);
+    });
+}
+
+export function showChips() {
+    const chips = document.querySelectorAll('.fs_option');
+    chips.forEach(chip => {
+        chip.style.display = 'inline-block';
+    });
+}
+
+export function hideChips() {
+    const chips = document.querySelectorAll('.fs_option');
+    chips.forEach(chip => {
+        chip.style.display = 'none';
+    });
 }
 
 export function updateLabels(chartdata) {
@@ -346,9 +426,9 @@ export function updateLabels(chartdata) {
     // updating line properties for focus and context views
     d3.selectAll('.focus .line')
         .attr('class', (d, i) => {
-            let classes = `line line-${d[0].measurement} `;
-            if (labels.amp[i]) classes += 'amplitude';
-            if (labels.phs[i]) classes += 'phase';
+            let classes = `line `;
+            if (labels.amp[i]) classes += '.amplitude';
+            if (labels.phs[i]) classes += '.phase';
             return classes;
         })
         .style('stroke', (d, i) => viewType == 0 ? d3.schemeCategory10[i % 10] : getLineProperties(d[0]).color)
@@ -357,13 +437,28 @@ export function updateLabels(chartdata) {
     
     d3.selectAll('.context .line')
         .attr('class', (d, i) => {
-            let classes = `line line-${d[0].measurement} `;
-            if (labels.amp[i]) classes += 'amplitude';
-            if (labels.phs[i]) classes += 'phase';
+            let classes = `line `;
+            if (labels.amp[i]) classes += '.amplitude';
+            if (labels.phs[i]) classes += '.phase';
             return classes;
         })
         .style('stroke', (d, i) => viewType == 0 ? d3.schemeCategory10[i % 10] : getLineProperties(d[0]).color)
         .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
         .style('stroke-width', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).width)
+
+
+    // updating chips
+    const chips = document.querySelectorAll('.fs_option');
+    chips.forEach((chip, i) => {
+        if (labels.amp[i] && labels.phs[i]) {
+            chip.style.background = `linear-gradient(90deg, ${pallette.red} 50%, ${pallette.green} 50%)`;  // Both amplitude and phase
+        } else if (labels.amp[i]) {
+            chip.style.background = `linear-gradient(90deg, ${pallette.red} 100%, white 100%)`;  // Only amplitude
+        } else if (labels.phs[i]) {
+            chip.style.background = `linear-gradient(90deg, ${pallette.green} 100%, white 100%)`;  // Only phase
+        } else {
+            chip.style.background = ''; 
+        }
+    });
 }
 

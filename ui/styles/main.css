@@ -164,16 +164,33 @@ select {
 }
 
 
-#node_options {
-  position: relative;
-  width: 220px;
-  height: 150px;
-  margin-right: 20px;
+#fs-list {
+  /* position: relative;
+  width: 90%;
   padding: 5px;
-  top: 25%;
-  border: 1px solid;
-  border-radius: 2px;
-  overflow: scroll;
+  */
+  /* border-style: solid;
+  border-width: thin;
+  border-color: #DDDDDD;
+  border-radius: 2px; */
+  /* overflow-y: scroll; */
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  gap: 1px;
+}
+
+.fs_option {
+  display: inline-block;
+  background-color: #e0f7fa;
+  color: #006064; 
+  padding: 3px 5px;
+  margin-right: 1px;
+  border-radius: 10px;
+  font-size: 12px;
+  cursor: pointer; 
+  border: 1px solid #b2ebf2; 
+  transition: background-color 0.3s;
 }
 
 #ts-container {
