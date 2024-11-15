@@ -386,20 +386,49 @@ export function addChips() {
         chip.textContent = item.measurement;
 
         chip.addEventListener('mouseover', function() {
-            d3.selectAll('.focus .line')
-                .style('opacity', 0.1);
-            d3.selectAll('.context .line')
-                .style('opacity', 0.1);
-            d3.selectAll(`#${this.textContent}-focus`)
-                .style('opacity', 1);
-            d3.selectAll(`#${this.textContent}-context`)
-                .style('opacity', 1);
+            const allChips = document.querySelectorAll('.fs_option');
+            const anyActive = Array.from(allChips).some(chip => chip.classList.contains('active'));
+            if (!anyActive) {
+                d3.selectAll('.focus .line')
+                    .style('opacity', 0.1);
+                d3.selectAll('.context .line')
+                    .style('opacity', 0.1);
+                d3.selectAll(`#${this.textContent}-focus`)
+                    .style('opacity', 1);
+                d3.selectAll(`#${this.textContent}-context`)
+                    .style('opacity', 1);
+            }
         })
         chip.addEventListener('mouseout', function () {
-            d3.selectAll('.focus .line')
-                .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
-            d3.selectAll('.context .line')
-                .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
+            const allChips = document.querySelectorAll('.fs_option');
+            const anyActive = Array.from(allChips).some(chip => chip.classList.contains('active'));
+            if (!anyActive) {
+                d3.selectAll('.focus .line')
+                    .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
+                d3.selectAll('.context .line')
+                    .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
+            }
+        });
+
+        chip.addEventListener('click', function() {
+            const isActive = this.classList.contains('active');
+            if (!isActive) {
+                d3.selectAll('.focus .line')
+                    .style('opacity', 0.1);
+                d3.selectAll('.context .line')
+                    .style('opacity', 0.1);
+                d3.selectAll(`#${this.textContent}-focus`)
+                    .style('opacity', 1);
+                d3.selectAll(`#${this.textContent}-context`)
+                    .style('opacity', 1);
+            }
+            const allChips = document.querySelectorAll('.fs_option');
+            allChips.forEach(chip => {
+                if (chip !== this) {
+                    chip.classList.remove('active');
+                }
+            });
+            this.classList.toggle('active');
         });
         
         const amplitudePercent = (item.amplitude) * 100;
@@ -407,12 +436,16 @@ export function addChips() {
 
         if (labels.amp[i] && labels.phs[i]) {
             chip.style.background = `linear-gradient(90deg, ${pallette.red} 50%, ${pallette.green} 50%)`;  // Both amplitude and phase
+            chip.style.color = 'white';
         } else if (labels.amp[i]) {
             chip.style.background = `linear-gradient(90deg, ${pallette.red} 100%, white 100%)`;  // Only amplitude
+            chip.style.color = 'white';
         } else if (labels.phs[i]) {
             chip.style.background = `linear-gradient(90deg, ${pallette.green} 100%, white 100%)`;  // Only phase
+            chip.style.color = 'white';
         } else {
             chip.style.background = ''; 
+            chip.style.color = '';
         }
 
         fsList.appendChild(chip);
@@ -481,3 +514,15 @@ export function updateLabels(chartdata) {
     });
 }
 
+document.addEventListener('click', function(event) {
+    const allChips = document.querySelectorAll('.fs_option');
+    const fsList = document.getElementById('fs-list');
+
+    if (!fsList.contains(event.target)) {
+        allChips.forEach(chip => chip.classList.remove('active'));
+        d3.selectAll('.focus .line')
+            .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity);
+        d3.selectAll('.context .line')
+            .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity);
+    }
+});

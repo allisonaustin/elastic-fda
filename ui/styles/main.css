@@ -182,7 +182,18 @@ select {
   font-size: 12px;
   cursor: pointer; 
   border: 1px solid #b2ebf2; 
-  transition: background-color 0.3s;
+  /* box-sizing: border-box; */
+}
+
+.fs_option.active {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); 
+  background-color: rgba(0, 123, 255, 0.2);
+  transition: box-shadow 0.3s;
+}
+
+.fs_option:hover {
+  cursor: pointer;
+  background-color: rgba(0, 123, 255, 0.2);
 }
 
 #ts-container {
@@ -404,6 +415,15 @@ div.tooltip-module {
   display: flex;
   gap: 5px;
   align-items: center; 
+}
+
+.freeze {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.hidden {
+  display:none;
 }
 
 #error-message {
