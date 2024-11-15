@@ -3,6 +3,7 @@ import './styles/main.css'
 
 let previousStart;
 let previousEnd;
+let errorStatus;
 
 async function getData(filename, kValue, thresholdValue) {
   const flaskUrl = `http://127.0.0.1:5001/getData/${filename}/${kValue}/${thresholdValue}`;
@@ -12,9 +13,14 @@ async function getData(filename, kValue, thresholdValue) {
       throw new Error('Error getting data.');
     }
     const data = await res.json();
-    return data
+    if (data) {
+      clearError()
+      errorStatus = false;
+      return data
+    }
   } catch (error) {
-    console.error('Error:', error);
+    errorStatus = error.message;
+    displayError(error.message + ". Please check that the server is running.");
   }
 }
 
@@ -26,8 +32,14 @@ async function computeOutliers(k, threshold, start, end) {
       throw new Error('Error getting data.');
     }
     const data = await res.json();
-    return data
+    if (data) {
+      errorStatus = false;
+      clearError()
+      return data;
+    }
   } catch (error) {
+    errorStatus = error.message;
+    displayError(error.message + ". Please check that the server is running.");
     console.error('Error:', error);
   }
 }
@@ -36,9 +48,11 @@ async function mount(file, viewType) {
   const kValue = document.getElementById('k-input').value;
   const thresholdValue = document.getElementById('threshold-input').value;
   const timeSeriesData = await getData(file, kValue, thresholdValue);
-  mountChart(timeSeriesData, viewType)
-  previousStart = Math.floor(timeSeriesData.data.length * 0.3);
-  previousEnd = Math.floor(timeSeriesData.data.length * 0.6);
+  if (!errorStatus) {
+    mountChart(timeSeriesData, viewType)
+    previousStart = Math.floor(timeSeriesData.data.length * 0.3);
+    previousEnd = Math.floor(timeSeriesData.data.length * 0.4);
+  }
 }
 
 // new chart with file change
@@ -47,8 +61,10 @@ async function reloadChart(file) {
   const thresholdValue = document.getElementById('threshold-input').value;
   const timeSeriesData = await getData(file, kValue, thresholdValue);
   let viewType = document.querySelector('.active').value;
-  mountChart(timeSeriesData, viewType)
-  focusView(timeSeriesData.data)
+  if (!errorStatus) {
+    mountChart(timeSeriesData, viewType)
+    focusView(timeSeriesData.data)
+  }
 }
 
 function updateViewType(viewType) {
@@ -110,8 +126,27 @@ async function submitDepthParams(event) {
   const thresholdValue = document.getElementById('threshold-input').value;
 
   // change in defaults
-  if ((kValue != 1.5) || (thresholdValue != 0.5) || (previousStart != brushStart) || (previousEnd != brushEnd)) {
+  if ((kValue != 1.5) || (thresholdValue != 0.4) || (previousStart != brushStart) || (previousEnd != brushEnd)) {
     const timeSeriesData = await computeOutliers(kValue, thresholdValue, brushStart, brushEnd)
     updateLabels(timeSeriesData)
+  }
+}
+
+function clearError() {
+  const errorElement = document.getElementById('error-message');
+  if (errorElement) {
+    errorElement.textContent = '';
+  }
+}
+
+function displayError(message) {
+  const errorElement = document.getElementById('error-message');
+  if (!errorElement) {
+    const newErrorElement = document.createElement('p');
+    newErrorElement.id = 'error-message';
+    newErrorElement.textContent = message;
+    document.body.appendChild(newErrorElement);
+  } else {
+    errorElement.textContent = message;
   }
 }

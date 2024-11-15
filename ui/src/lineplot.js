@@ -63,11 +63,11 @@ function getLineProperties(measurement) {
 
 function processData(data) {
     let processed = []
-    data.forEach(d => {
+    data.forEach((d, index) => {
         (Object.keys(d)).forEach((c) => {
-            if (c != 'timestamp') {
+            if (c != 'timestamp' && c != 'index') {
                 processed.push({ 
-                    timestamp: d3.timeParse('%Y-%m-%d %H:%M:%S')(d.timestamp),
+                    index: d.timestamp ? d3.timeParse('%Y-%m-%d %H:%M:%S')(d.timestamp) : index,
                     value: +d[c],
                     measurement: c,
                 });
@@ -85,13 +85,16 @@ function formatTick(d) {
     }
 }
 
-function findClosestIndex(data, targetTimestamp) {
-    return data.reduce((closestIndex, currentValue, index) => {
-        const currentDiff = Math.abs(currentValue.timestamp - targetTimestamp);
-        const closestDiff = Math.abs(data[closestIndex].timestamp - targetTimestamp);
-        
-        return currentDiff < closestDiff ? index : closestIndex;
-    }, 0);
+function getXAxisScale(data, width) {
+    if (svgdata.some(d => d.hasOwnProperty('timestamp'))) {
+        return d3.scaleTime()
+            .domain(d3.extent(data, function(d) { return d.index }))
+            .range([ 0, width ]);
+    } else {
+        return d3.scaleLinear()
+            .domain(d3.extent(data, function(d) { return d.index }))
+            .range([0, width]);
+    }
 }
 
 const chartObserver = new ResizeObserver(debounce(onResize, 100))
@@ -194,16 +197,14 @@ export function focusView(data) {
 
     d3.select('#line-svg').attr('width', size.width + margin.right)
 
-    x1 = d3.scaleTime()
-      .domain(d3.extent(data, function(d) { return d.timestamp }))
-      .range([ 0, size.width ]);
+    x1 = getXAxisScale(data, size.width)
 
     y1 = d3.scaleLinear()
       .domain([d3.min(data, function(d) { return +d.value }), d3.max(data, function(d) { return +d.value; })])
       .range([ size.height1, 0 ]);
 
     const line = d3.line()
-        .x(function(d) { return x1(d.timestamp) })
+        .x(function(d) { return x1(d.index) })
         .y(function(d) { return y1(+d.value) })
 
     chartContainer.append('defs')
@@ -252,16 +253,14 @@ export function focusView(data) {
 }
 
 function contextView(data, grouped) {
-    x2 = d3.scaleTime()
-        .domain(d3.extent(data, function(d) { return d.timestamp }))
-        .range([ 0, size.width ]);
+    x2 = getXAxisScale(data, size.width)
 
     y2 = d3.scaleLinear()
         .domain([d3.min(data, function(d) { return +d.value }), d3.max(data, function(d) { return +d.value; })])
         .range([ size.height2, 0 ]);
 
     let line2 = d3.line()
-        .x(function(d) { return x2(d.timestamp) })
+        .x(function(d) { return x2(d.index) })
         .y(function(d) { return y2(+d.value) })
 
     const context = chartContainer.append('g')
@@ -298,11 +297,11 @@ function contextView(data, grouped) {
         .attr('class', 'x-brush')
 
     brushStart = Math.floor(data.length * 0.3);
-    brushEnd = Math.floor(data.length * 0.6);
+    brushEnd = Math.floor(data.length * 0.4);
 
     const defaultWindow = [
-        x2(data[brushStart].timestamp),
-        x2(data[brushEnd].timestamp)
+        x2(data[brushStart].index),
+        x2(data[brushEnd].index)
     ]
 
     const brush = d3.brushX(x2)
@@ -322,18 +321,26 @@ function brushed(event) {
 
         x1.domain(extent);
 
+        const isDateIndex = svgdata.some(d => d.hasOwnProperty('timestamp'));
+
         brushStart = svgdata.findIndex(d => {
-            const timestampDate = new Date(d.timestamp); 
-            return timestampDate >= extent[0]; 
+            if (isDateIndex) {
+                return new Date(d.timestamp) >= extent[0]
+            } else {
+                return Math.round(d.index) >= Math.round(extent[0])
+            }
         });
 
         brushEnd = svgdata.findIndex(d => {
-            const timestampDate = new Date(d.timestamp);
-            return timestampDate > extent[1]; 
+            if (isDateIndex) {
+                return new Date(d.timestamp) > extent[1]
+            } else {
+                return Math.round(d.index) > Math.round(extent[1])
+            }
         }) - 1;
 
         d3.selectAll('.focus .line').attr('d', d => d3.line()
-            .x(d => x1(d.timestamp))
+            .x(d => x1(d.index))
             .y(d => y1(d.value))
             (d[1]) 
         );

@@ -34,7 +34,7 @@ def get_outliers(k=1.5, threshold=0.5, start=None, end=None):
     else:
         startIdx = int(start)
     if (end == None):
-        endIdx = round(len(df) * 0.5)
+        endIdx = round(len(df) * 0.4)
     else:
         endIdx = int(end)
 
@@ -47,9 +47,13 @@ def get_outliers(k=1.5, threshold=0.5, start=None, end=None):
     if startIdx > endIdx:
         raise ValueError(f"Start index {start} cannot be greater than end index {end}.")
 
-    values_df = df.drop('timestamp', axis=1) \
-        .apply(pd.to_numeric, errors='coerce')
-    
+    if ('timestamp' in df.columns):
+        values_df = df.drop('timestamp', axis=1) \
+            .apply(pd.to_numeric, errors='coerce')
+    else:
+        values_df = df.apply(pd.to_numeric, errors='coerce')
+        df['index'] = range(len(df))
+ 
     F = values_df.loc[startIdx:endIdx].to_numpy()
     depths = StreamingDepth(F)
     depths.k = float(k)
