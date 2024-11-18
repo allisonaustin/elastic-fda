@@ -30,7 +30,8 @@ select {
 }
 
 .wrapper_right {
-  width: 30%;
+  width: 29%;
+  padding-left:5px;
 }
 
 .color-selection {
@@ -168,12 +169,14 @@ select {
   column-count: 4;
   margin-top: 10px;
   margin-right: 20px;
+  margin-left: 20px;
   gap: 15px;
 }
 
 .fs_option {
   display: inline-block;
   width: 100%;
+  max-width:45px;
   background-color: #e0f7fa;
   color: #006064; 
   padding: 3px 5px;
@@ -210,11 +213,26 @@ select {
   display:flex;
   flex-direction:column;
   margin-left: 10px;
-  width:270px;
+  width:150px;
 }
 
 #ts_view {
   float: left;
+  position: relative;
+  display: flex;
+  /* align-items: center; */
+  flex-direction:column;
+  width: 100%;
+  height: 65%;
+  padding-top: 0px;
+  border-style: solid;
+  border-width: thin;
+  border-color: #DDDDDD;
+  margin-right: 0px;
+}
+
+#ds_view {
+  float: right;
   position: relative;
   display: flex;
   /* align-items: center; */
@@ -404,11 +422,10 @@ div.tooltip-module {
 }
 
 #depth-config {
-  /* position: absolute;
-  margin-left: 200px; */
-  padding-top: 15px;
-  position:relative;
-  display: inline-block;
+  width: 100%;
+  display:block;
+  padding-left: 40px;
+  padding-bottom: 10px;
 }
 
 #depth-params {

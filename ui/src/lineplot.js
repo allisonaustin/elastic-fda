@@ -193,7 +193,7 @@ export function focusView(data) {
     const grouped = d3.group(data, d => d.measurement)
     
     const format = d3.format(",.0f");
-    size = { width: 650, height1: 250, height2: 100 }
+    size = { width: 600, height1: 250, height2: 100 }
 
     d3.select('#line-svg').attr('width', size.width + margin.right)
 
@@ -504,12 +504,16 @@ export function updateLabels(chartdata) {
     chips.forEach((chip, i) => {
         if (labels.amp[i] && labels.phs[i]) {
             chip.style.background = `linear-gradient(90deg, ${pallette.red} 50%, ${pallette.green} 50%)`;  // Both amplitude and phase
+            chip.style.color = 'white';
         } else if (labels.amp[i]) {
             chip.style.background = `linear-gradient(90deg, ${pallette.red} 100%, white 100%)`;  // Only amplitude
+            chip.style.color = 'white';
         } else if (labels.phs[i]) {
             chip.style.background = `linear-gradient(90deg, ${pallette.green} 100%, white 100%)`;  // Only phase
+            chip.style.color = 'white';
         } else {
             chip.style.background = ''; 
+            chip.style.color = '';
         }
     });
 }

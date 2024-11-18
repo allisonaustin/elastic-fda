@@ -122,7 +122,6 @@ document.getElementById("depth-params").addEventListener("submit", submitDepthPa
 async function submitDepthParams(event) {
   event.preventDefault();
 
-   document.getElementById('loading-spinner').classList.remove('hidden');
    document.body.classList.add('freeze');
 
   const kValue = document.getElementById('k-input').value;
@@ -131,7 +130,6 @@ async function submitDepthParams(event) {
   // change in defaults
   if ((kValue != 1.5) || (thresholdValue != 0.4) || (previousStart != brushStart) || (previousEnd != brushEnd)) {
     const timeSeriesData = await computeOutliers(kValue, thresholdValue, brushStart, brushEnd)
-    document.getElementById('loading-spinner').classList.add('hidden');
     document.body.classList.remove('freeze');
     updateLabels(timeSeriesData)
   }
