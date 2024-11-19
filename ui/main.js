@@ -1,4 +1,5 @@
 import { mountChart, focusView, changeView, updateLabels, brushStart, brushEnd } from './src/lineplot.js'
+import { mountGraph } from './src/scatterplot.js';
 import './styles/main.css'
 
 let previousStart;
@@ -52,6 +53,7 @@ async function mount(file, viewType) {
     mountChart(timeSeriesData, viewType)
     previousStart = Math.floor(timeSeriesData.data.length * 0.3);
     previousEnd = Math.floor(timeSeriesData.data.length * 0.4);
+    mountGraph(timeSeriesData.depths)
   }
 }
 

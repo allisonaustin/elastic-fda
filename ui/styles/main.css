@@ -15,7 +15,7 @@ select {
 
 .wrapper_main {
   width: 98.5%;
-  height: 97%;
+  height: 65%;
   display: flex;
 }
 
@@ -26,12 +26,17 @@ select {
 }
 
 .wrapper_left {
-  width: 70%;
+  width: 60%;
 }
 
 .wrapper_right {
-  width: 29%;
+  width: 39%;
   padding-left:5px;
+}
+
+.wrapper_bottom {
+  width: 59.2%;
+  height:20%;
 }
 
 .color-selection {
@@ -167,7 +172,7 @@ select {
 
 #fs-list {
   column-count: 4;
-  margin-top: 10px;
+  margin-top: 20px;
   margin-right: 20px;
   margin-left: 20px;
   gap: 15px;
@@ -176,13 +181,13 @@ select {
 .fs_option {
   display: inline-block;
   width: 100%;
-  max-width:45px;
+  max-width:40px;
   background-color: #e0f7fa;
   color: #006064; 
   padding: 3px 5px;
   margin-right: 1px;
   border-radius: 10px;
-  font-size: 12px;
+  font-size: 10px;
   cursor: pointer; 
   border: 1px solid #b2ebf2; 
   /* box-sizing: border-box; */
@@ -223,7 +228,7 @@ select {
   /* align-items: center; */
   flex-direction:column;
   width: 100%;
-  height: 65%;
+  height: 100%;
   padding-top: 0px;
   border-style: solid;
   border-width: thin;
@@ -238,7 +243,22 @@ select {
   /* align-items: center; */
   flex-direction:column;
   width: 100%;
-  height: 65%;
+  height: 100%;
+  padding-top: 0px;
+  border-style: solid;
+  border-width: thin;
+  border-color: #DDDDDD;
+  margin-right: 0px;
+}
+
+#fs_view {
+  float: right;
+  position: relative;
+  display: flex;
+  /* align-items: center; */
+  flex-direction:column;
+  width: 100%;
+  height: 100%;
   padding-top: 0px;
   border-style: solid;
   border-width: thin;
@@ -247,6 +267,11 @@ select {
 }
 
 #line-svg {
+  display: block;
+  width: 100%;
+}
+
+#graph-svg {
   display: block;
   width: 100%;
 }
