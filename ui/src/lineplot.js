@@ -413,21 +413,21 @@ export function addChips() {
         chip.addEventListener('click', function() {
             const isActive = this.classList.contains('active');
             if (!isActive) {
-                d3.selectAll('.focus .line')
-                    .style('opacity', 0.1);
-                d3.selectAll('.context .line')
-                    .style('opacity', 0.1);
+                // d3.selectAll('.focus .line')
+                //     .style('opacity', 0.1);
+                // d3.selectAll('.context .line')
+                //     .style('opacity', 0.1);
                 d3.selectAll(`#${this.textContent}-focus`)
                     .style('opacity', 1);
                 d3.selectAll(`#${this.textContent}-context`)
                     .style('opacity', 1);
             }
-            const allChips = document.querySelectorAll('.fs_option');
-            allChips.forEach(chip => {
-                if (chip !== this) {
-                    chip.classList.remove('active');
-                }
-            });
+            // const allChips = document.querySelectorAll('.fs_option');
+            // allChips.forEach(chip => {
+            //     if (chip !== this) {
+            //         chip.classList.remove('active');
+            //     }
+            // });
             this.classList.toggle('active');
         });
         

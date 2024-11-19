@@ -194,9 +194,9 @@ select {
 }
 
 .fs_option.active {
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); 
+  /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);  */
   background-color: rgba(0, 123, 255, 0.2);
-  transition: box-shadow 0.3s;
+  /* transition: box-shadow 0.3s; */
 }
 
 .fs_option:hover {

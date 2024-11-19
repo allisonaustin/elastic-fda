@@ -19,15 +19,15 @@ let legendColors = {
 }
 
 export function mountGraph(data) {
+    depths = data.depths;
+    labels = data.labels;
     d3.select('#graph-svg').selectAll('*').remove();
 
-    const nodes = Object.keys(data.measurement).map(key => ({
-        id: data.measurement[key],
-        amplitude: data.amplitude[key],
-        phase: data.phase[key]
+    const nodes = Object.keys(depths.measurement).map(key => ({
+        id: depths.measurement[key],
+        amplitude: depths.amplitude[key],
+        phase: depths.phase[key]
     }));
-
-    console.log(nodes)
 
     simulation = d3.forceSimulation(nodes)
         .force('center', d3.forceCenter(size.width / 2, size.height / 2))
@@ -38,8 +38,20 @@ export function mountGraph(data) {
         .data(nodes)
         .enter()
         .append('circle')
+        .attr('id', `circle-${d.id}`)
         .attr('r', d => d.amplitude) 
-        .attr('fill', d => d3.interpolateCool(d.phase)) 
+        .attr('fill', (d, i) => {
+            if (labels.amp[i] && labels.phs[i]) {
+                return `linear-gradient(90deg, ${pallette.red} 50%, ${pallette.green} 50%)`;  // Both amplitude and phase
+            } else if (labels.amp[i]) {
+                return `linear-gradient(90deg, ${pallette.red} 100%, white 100%)`;  // Only amplitude
+            } else if (labels.phs[i]) {
+                return `linear-gradient(90deg, ${pallette.green} 100%, white 100%)`;  // Only phase
+            } else {
+                return '#e0f7fa'; 
+            }
+        }) 
+        
         .call(d3.drag()
             .on('start', dragStarted)
             .on('drag', dragged)

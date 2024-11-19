@@ -23,10 +23,13 @@ const format = (d) => d < 0.01 ? d3.format(".2e")(d) : d3.format(".2f")(d);
 export function mountGraph(data) {
     d3.select('#graph-svg').selectAll('*').remove();
 
-    const nodes = Object.keys(data.measurement).map(key => ({
-        id: data.measurement[key],
-        amplitude: data.amplitude[key],
-        phase: data.phase[key]
+    depths = data.depths;
+    labels = data.labels;
+
+    const nodes = Object.keys(depths.measurement).map(key => ({
+        id: depths.measurement[key],
+        amplitude: depths.amplitude[key],
+        phase: depths.phase[key]
     }));
 
     const xScale = d3.scaleLinear()
@@ -48,8 +51,16 @@ export function mountGraph(data) {
         .attr('cx', d => xScale(d.phase)) // x-position based on phase depth
         .attr('cy', d => yScale(d.amplitude)) // y-position based on amplitude depth
         .attr('r', 7) 
-        .attr('fill', 'steelblue') 
-        .attr('opacity', 0.7);
+        .attr('fill', (d, i) => {
+            if (labels.amp[i]) {
+                return `${pallette.red}`;  
+            } else if (labels.phs[i]) {
+                return `${pallette.green}`; 
+            } else {
+                return 'steelblue'; 
+            } 
+        })
+        .attr('opacity', 0.8);
 
     svg.selectAll('text')
         .data(nodes)
@@ -71,10 +82,8 @@ export function mountGraph(data) {
         .attr('y', margin.bottom)
         .attr('fill', 'black')
         .attr('text-anchor', 'end')
-        .text('Phase Depth')
-        
-    d3.selectAll('text')
         .style('font-size', '14px')
+        .text('Phase Depth')
 
     // Y-axis
     const yAxis = d3.axisLeft(yScale).tickFormat(format);
@@ -90,7 +99,9 @@ export function mountGraph(data) {
         .attr('transform', `rotate(-90) translate(-${size.width/5},${-margin.left})`)
         .style('font-size', '14px')
         .text('Amplitude Depth');
+}
 
-    d3.selectAll('text')
-        .style('font-size', '14px')
+
+export function updateLabels(newdata) {
+    // todo
 }

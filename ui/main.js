@@ -53,7 +53,7 @@ async function mount(file, viewType) {
     mountChart(timeSeriesData, viewType)
     previousStart = Math.floor(timeSeriesData.data.length * 0.3);
     previousEnd = Math.floor(timeSeriesData.data.length * 0.4);
-    mountGraph(timeSeriesData.depths)
+    mountGraph(timeSeriesData)
   }
 }
 
@@ -66,6 +66,7 @@ async function reloadChart(file) {
   if (!errorStatus) {
     mountChart(timeSeriesData, viewType)
     focusView(timeSeriesData.data)
+    mountGraph(timeSeriesData)
   }
 }
 
