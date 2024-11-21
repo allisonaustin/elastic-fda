@@ -50,11 +50,16 @@ def get_outliers(k=1.5, threshold=0.5, start=None, end=None):
     if ('timestamp' in df.columns):
         values_df = df.drop('timestamp', axis=1) \
             .apply(pd.to_numeric, errors='coerce')
+        F = values_df.loc[startIdx:endIdx].to_numpy()
+    elif ('index' in df.columns):
+        values_df = df.drop('index', axis=1) \
+            .apply(pd.to_numeric, errors='coerce')
+        F = values_df.loc[startIdx:endIdx].to_numpy()
     else:
         values_df = df.apply(pd.to_numeric, errors='coerce')
         df['index'] = range(len(df))
- 
-    F = values_df.loc[startIdx:endIdx].to_numpy()
+        F = values_df.loc[startIdx:endIdx].to_numpy()
+     
     depths = StreamingDepth(F)
     depths.k = float(k)
     depths.threshold = float(threshold)

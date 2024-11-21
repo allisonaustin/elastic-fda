@@ -171,17 +171,14 @@ select {
 
 
 #fs-list {
-  column-count: 4;
   margin-top: 20px;
   margin-right: 20px;
   margin-left: 20px;
-  gap: 15px;
+  overflow-y: auto;
 }
 
 .fs_option {
   display: inline-block;
-  width: 100%;
-  max-width:40px;
   background-color: #e0f7fa;
   color: #006064; 
   padding: 3px 5px;
@@ -528,4 +525,17 @@ button {
 .toggle-btn.active {
   background-color: #b5c2d5;
   color: white;
+}
+
+.scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: transparent;
 }

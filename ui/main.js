@@ -1,5 +1,5 @@
 import { mountChart, focusView, changeView, updateLabels, brushStart, brushEnd } from './src/lineplot.js'
-import { mountGraph } from './src/scatterplot.js';
+import { mountGraph, updateData } from './src/scatterplot.js';
 import './styles/main.css'
 
 let previousStart;
@@ -135,6 +135,7 @@ async function submitDepthParams(event) {
     const timeSeriesData = await computeOutliers(kValue, thresholdValue, brushStart, brushEnd)
     document.body.classList.remove('freeze');
     updateLabels(timeSeriesData)
+    updateData(timeSeriesData)
   }
 }
 
