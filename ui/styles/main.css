@@ -35,7 +35,7 @@ select {
 }
 
 .wrapper_bottom {
-  width: 59.2%;
+  width: 97.9%;
   height:20%;
 }
 
@@ -169,6 +169,10 @@ select {
   border-color: #DDDDDD;
 }
 
+#ts_legend {
+  margin-left: 20px;
+}
+
 
 #fs-list {
   margin-top: 20px;
@@ -179,14 +183,14 @@ select {
 
 .fs_option {
   display: inline-block;
-  background-color: #e0f7fa;
+  background-color: #9bcfd6;
   color: #006064; 
   padding: 3px 5px;
   margin-right: 1px;
   border-radius: 10px;
   font-size: 10px;
   cursor: pointer; 
-  border: 1px solid #b2ebf2; 
+  border: 1px solid #6ea6ae; 
   /* box-sizing: border-box; */
 }
 

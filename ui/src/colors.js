@@ -11,8 +11,12 @@ export const pallette = {
     green: '#457500',
     orange: '#DA7400',
     pink: '#DA73A1',
-    lightblue: '#91a7c6',
-    gray: '#b5c2d5'
+    lightblue: '#9bcfd6',
+    teal: '#6ea6ae',
+    gray: '#b5c2d5',
+    purple: '#745ea7',
+    darkred: '#782731',
+    darkgreen: '#2b4704',
 }
 
 export const scale = {

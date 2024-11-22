@@ -5,7 +5,8 @@ import { isEmpty, debounce, isUndefined } from 'lodash';
 
 const margin = { left: 50, right: 30, top: 20, bottom: 30 }
 let size = { width: 0, height1: 0, height2: 0 }
-let chartContainer = d3.select('#line-svg')
+let chartContainer;
+let svg;
 let x1;
 let x2;
 let y1;
@@ -20,24 +21,10 @@ export let brushEnd;
 
 let defaultColor = pallette.lightgray;
 let legendColors = {
-    amplitude: pallette.red,
-    phase: pallette.green
-}
-
-let colorScale = d3.scaleOrdinal()
-    .domain([0, 1, 2])
-    .range([pallette.blue, pallette.purple].map(percentColToD3Rgb));
-
-const onResize = (targets) => {
-    targets.forEach(target => {
-        if (target.target.getAttribute('id') !== 'ts-container') return;
-        size = { width: target.contentRect.width, height: target.contentRect.height }
-        if (!isEmpty(size) && !isEmpty(svgdata)) {
-            d3.select('#line-svg').selectAll('*').remove()
-            //console.log(size, bars)
-            focusView(svgdata)
-        }
-    })
+    "amplitude": pallette.red,
+    "phase": pallette.green,
+    "amplitude and phase": pallette.purple,
+    "normal": pallette.lightblue
 }
 
 function getLineProperties(measurement) {
@@ -47,12 +34,17 @@ function getLineProperties(measurement) {
     let width = 1;
 
     if (index !== -1) {
-        if (labels.amp[index]) {
+        if (labels.amp[index] && labels.phs[index]) {
+            color = legendColors["amplitude and phase"];
+            opacity = 1;
+            width = 1.2; 
+        }
+        else if (labels.amp[index]) {
             color = legendColors.amplitude;
             opacity = 1;
             width = 1.2; 
         }
-        if (labels.phs[index]) {
+        else if (labels.phs[index]) {
             color = legendColors.phase;
             opacity = 1; 
             width = 1.2;
@@ -97,20 +89,26 @@ function getXAxisScale(data, width) {
     }
 }
 
-const chartObserver = new ResizeObserver(debounce(onResize, 100))
-
-export function mountChart(chartdata, viewType) { // registering this element to watch its size change
-    let chartContainer = document.querySelector('#ts-container')
-    chartObserver.observe(chartContainer)
+export function mountChart(chartdata, viewType) {
     svgdata = chartdata.data
     depths = chartdata.depths
     labels = chartdata.labels
     viewType = viewType
 
+    size = { width: 700, height1: 300, height2: 100 }
+
+    d3.select('#line-svg').selectAll('*').remove()
+
+    svg = d3.select('#line-svg').attr('viewBox', `0 0 ${size.width + margin.right + margin.left} ${size.height1 + size.height2 + margin.top + margin.bottom}`);
+    chartContainer = svg.append('g')
+        .attr('id', 'time-series-container')
+        .attr('transform', `translate(0,${-margin.top})`)
+
     if (viewType == 1) {
         addLegend();
         addFuncs();
     }
+    focusView(chartdata.data);
 }
 
 function addLegend() {
@@ -121,16 +119,18 @@ function addLegend() {
         .attr('class', 'legend')
         .attr('transform', `translate(0, ${margin.top})`);
 
-    legend.append('text')
-        .attr('x', 0)
-        .attr('y', 0)
-        .text("Outliers")
-        .style('text-anchor', 'start')
-        .style('alignment-baseline', 'middle');
+    // legend.append('text')
+    //     .attr('x', 0)
+    //     .attr('y', 0)
+    //     .text("Outliers")
+    //     .style('text-anchor', 'start')
+    //     .style('alignment-baseline', 'middle');
+
+    let xOffset = 0;
 
     Object.keys(legendColors).forEach((label, index) => {
         const legendRow = legend.append('g')
-            .attr('transform', `translate(0, ${index * 20 + 10})`)
+            .attr("transform", `translate(${xOffset}, -6)`)
             .on('mouseover', () => {
                 d3.selectAll('.focus .line')
                     .style('opacity', 0.1);
@@ -167,12 +167,17 @@ function addLegend() {
             .attr('height', 10)
             .attr('fill', legendColors[label]);
 
-        legendRow.append('text')
+        const text = legendRow.append('text')
             .attr('x', 15)
             .attr('y', 5)
             .text(label)
             .style('text-anchor', 'start')
+            .style('font-size', '12px')
             .style('alignment-baseline', 'middle');
+
+        legendRow.node().getBBox(); 
+        const textWidth = text.node().getBBox().width;
+        xOffset += 25 + textWidth;
     });
 }
 
@@ -191,16 +196,10 @@ function removeLegend() {
 
 // https://observablehq.com/@thetylerwolf/day-16-zoomable-area-chart
 export function focusView(data) {
-
-    d3.select('#line-svg').selectAll('*').remove()
-
     data = processData(svgdata)
     const grouped = d3.group(data, d => d.measurement)
     
     const format = d3.format(",.0f");
-    size = { width: 600, height1: 250, height2: 100 }
-
-    d3.select('#line-svg').attr('width', size.width + margin.right)
 
     x1 = getXAxisScale(data, size.width)
 
@@ -442,7 +441,8 @@ export function addFuncs() {
         const phasePercent = (item.phase) * 100;
 
         if (labels.amp[i] && labels.phs[i]) {
-            fn.style.background = `linear-gradient(90deg, ${pallette.red} 50%, ${pallette.green} 50%)`;  // Both amplitude and phase
+            // fn.style.background = `linear-gradient(90deg, ${pallette.red} 50%, ${pallette.green} 50%)`;  // Both amplitude and phase
+            fn.style.background = `linear-gradient(90deg, ${pallette.purple} 100%, white 100%)`;
             fn.style.color = 'white';
         } else if (labels.amp[i]) {
             fn.style.background = `linear-gradient(90deg, ${pallette.red} 100%, white 100%)`;  // Only amplitude
@@ -510,7 +510,7 @@ export function updateLabels(chartdata) {
     const fs = document.querySelectorAll('.fs_option');
     fs.forEach((fn, i) => {
         if (labels.amp[i] && labels.phs[i]) {
-            fn.style.background = `linear-gradient(90deg, ${pallette.red} 50%, ${pallette.green} 50%)`;  // Both amplitude and phase
+            fn.style.background = `linear-gradient(90deg, ${pallette.purple} 100%, white 100%)`;
             fn.style.color = 'white';
         } else if (labels.amp[i]) {
             fn.style.background = `linear-gradient(90deg, ${pallette.red} 100%, white 100%)`;  // Only amplitude

@@ -1,5 +1,5 @@
 import { mountChart, focusView, changeView, updateLabels, brushStart, brushEnd } from './src/lineplot.js'
-import { mountGraph, updateData } from './src/scatterplot.js';
+import { mountGraph, updateData, drawBox } from './src/scatterplot.js';
 import './styles/main.css'
 
 let previousStart;
@@ -54,6 +54,7 @@ async function mount(file, viewType) {
     previousStart = Math.floor(timeSeriesData.data.length * 0.3);
     previousEnd = Math.floor(timeSeriesData.data.length * 0.4);
     mountGraph(timeSeriesData)
+    drawBox(kValue, thresholdValue)
   }
 }
 
@@ -62,11 +63,12 @@ async function reloadChart(file) {
   const kValue = document.getElementById('k-input').value;
   const thresholdValue = document.getElementById('threshold-input').value;
   const timeSeriesData = await getData(file, kValue, thresholdValue);
-  let viewType = document.querySelector('.active').value;
+  // let viewType = document.querySelector('.active').value;
+  let viewType = 1;
   if (!errorStatus) {
     mountChart(timeSeriesData, viewType)
-    focusView(timeSeriesData.data)
     mountGraph(timeSeriesData)
+    drawBox(kValue, thresholdValue)
   }
 }
 
@@ -76,7 +78,8 @@ function updateViewType(viewType) {
 
 function init() {
   let filename = document.getElementById('data_selection').value;
-  let viewType = document.querySelector('.active').value;
+  // let viewType = document.querySelector('.active').value;
+  let viewType = 1;
   
   if (viewType == 0) {
     document.getElementById('depth-config').style.display = 'none';
@@ -99,13 +102,13 @@ function toggleButton(button) {
   }
 }
 
-document.getElementById('btn1').addEventListener('click', function() {
-  toggleButton(this);
-});
+// document.getElementById('btn1').addEventListener('click', function() {
+//   toggleButton(this);
+// });
 
-document.getElementById('btn2').addEventListener('click', function() {
-  toggleButton(this);
-});
+// document.getElementById('btn2').addEventListener('click', function() {
+//   toggleButton(this);
+// });
 
 window.update = () => {
   let filename = document.getElementById('data_selection').value;

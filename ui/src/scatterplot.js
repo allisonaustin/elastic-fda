@@ -27,6 +27,8 @@ let xAxis, yAxis;
 
 
 export function mountGraph(data) {
+    d3.select('#graph-svg').selectAll('*').remove();
+
     depths = data.depths;
     labels = data.labels;
 
@@ -99,14 +101,30 @@ function appendCircles(data) {
         .attr('cy', d => yScale(d.amplitude)) // y-position based on amplitude depth
         .attr('r', 7) 
         .attr('fill', (d, i) => {
+            if (labels.amp[i] && labels.phs[i]) {
+                return `${pallette.purple}`
+            } 
             if (labels.amp[i]) {
                 return `${pallette.red}`;  
             } else if (labels.phs[i]) {
                 return `${pallette.green}`; 
             } else {
-                return 'steelblue'; 
+                return `${pallette.lightblue}`; 
             } 
         })
+        .attr('stroke', (d, i) => {
+            if (labels.amp[i] && labels.phs[i]) {
+                return `${pallette.purple}`
+            } 
+            if (labels.amp[i]) {
+                return `${pallette.darkred}`;
+            } else if (labels.phs[i]) {
+                return `${pallette.darkgreen}`; 
+            } else {
+                return `${pallette.teal}`; 
+            } 
+        })
+        .attr('stroke-width', 2)
         .attr('opacity', 0);
 
     circs
@@ -172,18 +190,70 @@ function updateCircles(newdata) {
         .attr('cx', d => xScale(d.phase))
         .attr('cy', d => yScale(d.amplitude))
         .attr('fill', (d, i) => {
+            if (labels.amp[i] && labels.phs[i]) {
+                return `${pallette.purple}`
+            } 
             if (labels.amp[i]) {
                 return `${pallette.red}`;  
             } else if (labels.phs[i]) {
                 return `${pallette.green}`; 
             } else {
-                return 'steelblue'; 
+                return `${pallette.lightblue}`; 
             } 
         })
+        .attr('stroke', (d, i) => {
+            if (labels.amp[i] && labels.phs[i]) {
+                return `${pallette.purple}`
+            } 
+            if (labels.amp[i]) {
+                return `${pallette.darkred}`;
+            } else if (labels.phs[i]) {
+                return `${pallette.darkgreen}`; 
+            } else {
+                return `${pallette.teal}`; 
+            } 
+        })
+        .attr('stroke-width', 2)
 
     circleText
         .transition()
         .duration(500)
         .attr('x', d => xScale(d.phase) + 7) 
         .attr('y', d => yScale(d.amplitude) - 7) 
+}
+
+export function drawBox(k, threshold) {
+    const ampValues = Object.values(depths.amplitude);
+    const phsValues = Object.values(depths.phase);
+
+    const amp_100 = d3.max(ampValues);
+    const phs_100 = d3.max(phsValues);
+
+    const amp_50 = d3.median(ampValues);
+    const phs_50 = d3.median(phsValues);
+
+    const amp_iqr = amp_100 - amp_50;
+    const phs_iqr = phs_100 - phs_50;
+
+    const amp_lim = Math.max(amp_50 - k * amp_iqr, 0);
+    const phs_lim = Math.max(phs_50 - k * phs_iqr, 0);
+
+    const amp_thre = d3.quantile(ampValues, parseFloat(threshold));
+    const phs_thre = d3.quantile(phsValues, parseFloat(threshold));
+
+    const boxHeight = Math.abs(yScale(amp_lim) - yScale(amp_thre));
+    const boxWidth = Math.abs(xScale(phs_lim) - xScale(phs_thre));
+
+    const boxX = Math.min(xScale(phs_lim), xScale(phs_thre)); // leftmost x-coordinate
+    const boxY = Math.min(yScale(amp_lim), yScale(amp_thre)); // topmost y-coordinate
+
+    // container.append('rect')
+    //     .attr('x', boxX)
+    //     .attr('y', boxY)
+    //     .attr('width', boxWidth)
+    //     .attr('height', boxHeight)
+    //     .attr('fill', 'none') 
+    //     .attr('stroke', 'red')
+    //     .attr('stroke-width', 2) 
+    //     .style('stroke-dasharray', '5,5'); 
 }
