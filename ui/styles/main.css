@@ -447,10 +447,14 @@ div.tooltip-module {
   margin-left: 5px;
 }
 
+.config {
+  padding-left: 10px;
+}
+
 #depth-config {
   width: 100%;
   display:block;
-  padding-left: 40px;
+  padding-left: 10px;
   padding-bottom: 10px;
 }
 
