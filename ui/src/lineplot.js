@@ -109,7 +109,7 @@ export function mountChart(chartdata, viewType) { // registering this element to
 
     if (viewType == 1) {
         addLegend();
-        addChips();
+        addFuncs();
     }
 }
 
@@ -136,6 +136,8 @@ function addLegend() {
                     .style('opacity', 0.1);
                 d3.selectAll('.context .line')
                     .style('opacity', 0.1);
+                d3.selectAll('.ds-circle')
+                    .style('opacity', 0.1)
            
                 d3.selectAll('.focus .line')
                     .filter(function() {
@@ -155,7 +157,10 @@ function addLegend() {
     
                 d3.selectAll('.context .line')
                     .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
-            });
+                
+                d3.selectAll('.ds-circle')
+                    .style('opacity', 0.8)
+                });
 
         legendRow.append('rect')
             .attr('width', 10)
@@ -363,15 +368,15 @@ export function changeView(type) {
 
     if (viewType == 1) {
         showLegend();
-        showChips();
+        showFuncs();
     } else if (viewType == 0) {
         hideLegend();
-        hideChips();
+        hideFuncs();
     }
 }
 
-export function addChips() {
-    removeChips();
+export function addFuncs() {
+    removeFuncs();
     const fsList = document.getElementById('fs-list');
 
     let dataList = Object.keys(depths.amplitude).map(key => ({
@@ -381,13 +386,13 @@ export function addChips() {
     }));
 
     dataList.forEach((item, i) => {
-        const chip = document.createElement('div');
-        chip.classList.add('fs_option');
-        chip.textContent = item.measurement;
+        const fn = document.createElement('div');
+        fn.classList.add('fs_option');
+        fn.textContent = item.measurement;
 
-        chip.addEventListener('mouseover', function() {
-            const allChips = document.querySelectorAll('.fs_option');
-            const anyActive = Array.from(allChips).some(chip => chip.classList.contains('active'));
+        fn.addEventListener('mouseover', function() {
+            const allFuncs = document.querySelectorAll('.fs_option');
+            const anyActive = Array.from(allFuncs).some(fn => fn.classList.contains('active'));
             if (!anyActive) {
                 d3.selectAll('.focus .line')
                     .style('opacity', 0.1);
@@ -397,20 +402,26 @@ export function addChips() {
                     .style('opacity', 1);
                 d3.selectAll(`#${this.textContent}-context`)
                     .style('opacity', 1);
+                d3.selectAll('.ds-circle')
+                    .style('opacity', 0.1);
+                d3.selectAll(`#${this.textContent}-circle`)
+                    .style('opacity', 0.8)
             }
         })
-        chip.addEventListener('mouseout', function () {
-            const allChips = document.querySelectorAll('.fs_option');
-            const anyActive = Array.from(allChips).some(chip => chip.classList.contains('active'));
+        fn.addEventListener('mouseout', function () {
+            const allFuncs = document.querySelectorAll('.fs_option');
+            const anyActive = Array.from(allFuncs).some(fn => fn.classList.contains('active'));
             if (!anyActive) {
                 d3.selectAll('.focus .line')
                     .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
                 d3.selectAll('.context .line')
                     .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity)
-            }
+                d3.selectAll('.ds-circle')
+                    .style('opacity', 0.8)
+                }
         });
 
-        chip.addEventListener('click', function() {
+        fn.addEventListener('click', function() {
             const isActive = this.classList.contains('active');
             if (!isActive) {
                 // d3.selectAll('.focus .line')
@@ -421,13 +432,9 @@ export function addChips() {
                     .style('opacity', 1);
                 d3.selectAll(`#${this.textContent}-context`)
                     .style('opacity', 1);
+                d3.selectAll(`#${this.textContent}-circle`)
+                    .style('opacity', 0.8)
             }
-            // const allChips = document.querySelectorAll('.fs_option');
-            // allChips.forEach(chip => {
-            //     if (chip !== this) {
-            //         chip.classList.remove('active');
-            //     }
-            // });
             this.classList.toggle('active');
         });
         
@@ -435,40 +442,40 @@ export function addChips() {
         const phasePercent = (item.phase) * 100;
 
         if (labels.amp[i] && labels.phs[i]) {
-            chip.style.background = `linear-gradient(90deg, ${pallette.red} 50%, ${pallette.green} 50%)`;  // Both amplitude and phase
-            chip.style.color = 'white';
+            fn.style.background = `linear-gradient(90deg, ${pallette.red} 50%, ${pallette.green} 50%)`;  // Both amplitude and phase
+            fn.style.color = 'white';
         } else if (labels.amp[i]) {
-            chip.style.background = `linear-gradient(90deg, ${pallette.red} 100%, white 100%)`;  // Only amplitude
-            chip.style.color = 'white';
+            fn.style.background = `linear-gradient(90deg, ${pallette.red} 100%, white 100%)`;  // Only amplitude
+            fn.style.color = 'white';
         } else if (labels.phs[i]) {
-            chip.style.background = `linear-gradient(90deg, ${pallette.green} 100%, white 100%)`;  // Only phase
-            chip.style.color = 'white';
+            fn.style.background = `linear-gradient(90deg, ${pallette.green} 100%, white 100%)`;  // Only phase
+            fn.style.color = 'white';
         } else {
-            chip.style.background = ''; 
-            chip.style.color = '';
+            fn.style.background = ''; 
+            fn.style.color = '';
         }
 
-        fsList.appendChild(chip);
+        fsList.appendChild(fn);
     });
 }
 
-export function showChips() {
-    const chips = document.querySelectorAll('.fs_option');
-    chips.forEach(chip => {
-        chip.style.display = 'inline-block';
+export function showFuncs() {
+    const fs = document.querySelectorAll('.fs_option');
+    fs.forEach(fn => {
+        fn.style.display = 'inline-block';
     });
 }
 
-export function hideChips() {
-    const chips = document.querySelectorAll('.fs_option');
-    chips.forEach(chip => {
-        chip.style.display = 'none';
+export function hideFuncs() {
+    const fs = document.querySelectorAll('.fs_option');
+    fs.forEach(fn => {
+        fn.style.display = 'none';
     });
 }
 
-export function removeChips() {
-    const chipContainer = document.getElementById('fs-list');
-    chipContainer.innerHTML = '';
+export function removeFuncs() {
+    const fContainer = document.getElementById('fs-list');
+    fContainer.innerHTML = '';
 }
 
 export function updateLabels(chartdata) {
@@ -499,31 +506,31 @@ export function updateLabels(chartdata) {
         .style('stroke-width', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).width)
 
 
-    // updating chips
-    const chips = document.querySelectorAll('.fs_option');
-    chips.forEach((chip, i) => {
+    // updating functions
+    const fs = document.querySelectorAll('.fs_option');
+    fs.forEach((fn, i) => {
         if (labels.amp[i] && labels.phs[i]) {
-            chip.style.background = `linear-gradient(90deg, ${pallette.red} 50%, ${pallette.green} 50%)`;  // Both amplitude and phase
-            chip.style.color = 'white';
+            fn.style.background = `linear-gradient(90deg, ${pallette.red} 50%, ${pallette.green} 50%)`;  // Both amplitude and phase
+            fn.style.color = 'white';
         } else if (labels.amp[i]) {
-            chip.style.background = `linear-gradient(90deg, ${pallette.red} 100%, white 100%)`;  // Only amplitude
-            chip.style.color = 'white';
+            fn.style.background = `linear-gradient(90deg, ${pallette.red} 100%, white 100%)`;  // Only amplitude
+            fn.style.color = 'white';
         } else if (labels.phs[i]) {
-            chip.style.background = `linear-gradient(90deg, ${pallette.green} 100%, white 100%)`;  // Only phase
-            chip.style.color = 'white';
+            fn.style.background = `linear-gradient(90deg, ${pallette.green} 100%, white 100%)`;  // Only phase
+            fn.style.color = 'white';
         } else {
-            chip.style.background = ''; 
-            chip.style.color = '';
+            fn.style.background = ''; 
+            fn.style.color = '';
         }
     });
 }
 
 document.addEventListener('click', function(event) {
-    const allChips = document.querySelectorAll('.fs_option');
+    const allFuncs = document.querySelectorAll('.fs_option');
     const fsList = document.getElementById('fs-list');
 
     if (!fsList.contains(event.target)) {
-        allChips.forEach(chip => chip.classList.remove('active'));
+        allFuncs.forEach(fn => fn.classList.remove('active'));
         d3.selectAll('.focus .line')
             .style('opacity', (d) => viewType == 0 ? 1 : getLineProperties(d[0]).opacity);
         d3.selectAll('.context .line')

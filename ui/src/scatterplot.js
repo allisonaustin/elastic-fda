@@ -94,7 +94,7 @@ function appendCircles(data) {
             if (labels.phs[i]) classes += 'phase';
             return classes;
         })
-        .attr('id', (d, i) => d.id)
+        .attr('id', (d, i) => `${d.id}-circle`)
         .attr('cx', d => xScale(d.phase)) // x-position based on phase depth
         .attr('cy', d => yScale(d.amplitude)) // y-position based on amplitude depth
         .attr('r', 7) 
