@@ -116,7 +116,7 @@ function init() {
   let filename = "";
   let dataset = getDatasetFromUrl();
   if (dataset == 0) {
-    filename = 'hpc_oda_col_system.csv';
+    filename = 'hpc_oda_col_idle.csv';
   } else if (dataset == 1) {
     filename = 'gyro_phone_A_x.csv';
   }

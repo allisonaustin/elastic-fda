@@ -21,6 +21,9 @@ def get_data(filename, k, threshold, start=None, end=None):
     df = pd.read_csv('./data/'+filename)
     df = df.replace({np.nan: None})
 
+    start = None 
+    end = None
+
     return get_outliers(k, threshold, start, end)
 
 
