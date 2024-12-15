@@ -63,7 +63,7 @@ var taskDatasets = {
         },
         {
           "qtype": "tracing",
-          "question": "Given participants 1611, 1633, and 1644, which variable(s) contribut4ed most to the amplitude and/or phase outlyingness labels for these participants?",
+          "question": "Given participants 1611, 1633, and 1644, which variable(s) contributed most to the amplitude and/or phase outlyingness labels for these participants?",
           "atype": "multiple",
           "answer": [""] 
         },

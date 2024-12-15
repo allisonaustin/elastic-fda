@@ -13,7 +13,7 @@ var timeData;
 var dataset;
 var participant;
 
-const csvHeaders = ["Domain", "QType", "Question", "UserAnswer", "Correct", "ParticipantID", "Timestamp"];
+const csvHeaders = ["Domain", "QType", "Question", "UserAnswer", "ParticipantID", "Timestamp"];
 
 window.addEventListener('load', function(event) {
     console.log("Task: Ready to generate form!");
@@ -267,17 +267,17 @@ function saveData() {
             if(text_input==null) {
                 this.csvData[c][3] = ""; // no selection
             } else {
-                this.csvData[c][3] = text_input.replace(',', ' ');
+                this.csvData[c][3] = text_input.replace(",", " ");
             }
-            let input_arr = text_input.split(",");
-            for (var i=0; i<input_arr.length; i++) { // checking answer
-                if(this.selectedTask.answer.includes(input_arr[i])) {
-                    this.csvData[c][4] = 1;
-                    break;
-                } else {
-                    this.csvData[c][4] = 0;
-                }
-            }
+            // let input_arr = text_input.split(",");
+            // for (var i=0; i<input_arr.length; i++) { // checking answer
+            //     if(this.selectedTask.answer.includes(input_arr[i])) {
+            //         this.csvData[c][4] = 1;
+            //         break;
+            //     } else {
+            //         this.csvData[c][4] = 0;
+            //     }
+            // }
             break;
     }
     // p_id
