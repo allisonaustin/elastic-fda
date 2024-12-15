@@ -15,4 +15,4 @@ Open another terminal and run:
 
 ```cd server```
 
-```python server.py``
+```python server.py```

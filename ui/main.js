@@ -72,12 +72,55 @@ async function reloadChart(file) {
   }
 }
 
+function getDatasetFromUrl() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('domain');
+}
+
+function updateFileOptions(domain) {
+  let selectElement = document.getElementById('data_selection');
+  selectElement.innerHTML = ''; 
+
+  let options = [];
+
+  if (domain == 0) {
+    options = [
+      { value: 'hpc_oda_col_idle.csv', text: 'col_idle' },
+      { value: 'hpc_oda_col_system.csv', text: 'col_system' },
+      { value: 'hpc_oda_cpu_cycles.csv', text: 'cpu_cycles' },
+      { value: 'hpc_oda_cache_misses.csv', text: 'cache_misses' }
+    ];
+  } else if (domain == 1) {
+    options = [
+      { value: 'accel_phone_A_x.csv', text: 'Accel Phone Walking' },
+      { value: 'gyro_phone_A_x.csv', text: 'Gyro Phone Walking' },
+      { value: 'gyro_phone_B_x.csv', text: 'Gyro Phone Jogging' }
+    ];
+  }
+
+  options.forEach(option => {
+    let optElement = document.createElement('option');
+    optElement.value = option.value;
+    optElement.text = option.text;
+    selectElement.appendChild(optElement);
+  });
+}
+
 function updateViewType(viewType) {
   changeView(viewType);
 }
 
 function init() {
-  let filename = document.getElementById('data_selection').value;
+  // let filename = document.getElementById('data_selection').value;
+  let filename = "";
+  let dataset = getDatasetFromUrl();
+  if (dataset == 0) {
+    filename = 'hpc_oda_col_system.csv';
+  } else if (dataset == 1) {
+    filename = 'gyro_phone_A_x.csv';
+  }
+  document.getElementById('data_selection').value = filename;
+  updateFileOptions(dataset);
   // let viewType = document.querySelector('.active').value;
   let viewType = 1;
   

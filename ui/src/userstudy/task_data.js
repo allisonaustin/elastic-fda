@@ -28,7 +28,7 @@ var taskDatasets = {
         },
         {
           "qtype": "tracing",
-          "question": "Given nodes 6, 7, and 11, which variable(s) contribut4ed most to the amplitude and/or phase outlyingness labels for these nodes?",
+          "question": "Given nodes 6, 7, and 11, which variable(s) contributed most to the amplitude and/or phase outlyingness labels for these nodes?",
           "atype": "multiple",
           "answer": [""] 
         },

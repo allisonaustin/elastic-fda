@@ -11,6 +11,9 @@ var tasknum=0;
 var csvData;
 var timeData;
 var dataset;
+var participant;
+
+const csvHeaders = ["Domain", "QType", "Question", "UserAnswer", "Correct", "ParticipantID", "Timestamp"];
 
 window.addEventListener('load', function(event) {
     console.log("Task: Ready to generate form!");
@@ -19,6 +22,7 @@ window.addEventListener('load', function(event) {
     timeData = new Array(30);
     startTime = new Date().getTime();
     this.selectedDomain = getDomain();
+    this.participant = getParticipant();
     initCSV(csvData);
     
     //Data
@@ -58,7 +62,6 @@ function getDomain() {
   if(domain=='0') return 0;
   else if(domain=='1') return 1;
 }
-
 function setVis(vis) {
     this.vis = vis;
 }
@@ -96,6 +99,12 @@ function nextTask() {
         if(tasknum==taskset.tasks.length) {
             // downloading data
             window.open('data:text/csv;charset=utf-8' + csvData.join(','));
+            // const blob = new Blob([csvData.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            // const link = document.createElement('a');
+            // link.href = URL.createObjectURL(blob);
+            // link.download = 'results.csv';
+            // link.click();
+
             document.getElementById("submit").type="submit";
             document.getElementById("taskForm").action = "closing_form.html";
             return valid;
@@ -193,6 +202,10 @@ function validateForm() {
 
 function saveData() {
     let c = tasknum;
+    if (c == 1) {
+        this.csvData[0] = csvHeaders.join(',') + "\n"; 
+    }
+
     this.csvData[c] = new Array();
     // domain
     this.csvData[c][0] = this.selectedDomain;
@@ -254,7 +267,7 @@ function saveData() {
             if(text_input==null) {
                 this.csvData[c][3] = ""; // no selection
             } else {
-                this.csvData[c][3] = text_input;
+                this.csvData[c][3] = text_input.replace(',', ' ');
             }
             let input_arr = text_input.split(",");
             for (var i=0; i<input_arr.length; i++) { // checking answer
