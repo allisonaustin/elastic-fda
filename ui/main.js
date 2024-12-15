@@ -6,9 +6,9 @@ let previousStart;
 let previousEnd;
 let errorStatus;
 
-async function getData(filename, kValue, thresholdValue) {
+async function getData(filename, kValue, thresholdValue, start, end) {
   console.log('getting data...')
-  const flaskUrl = `http://127.0.0.1:5001/getData/${filename}/${kValue}/${thresholdValue}`;
+  const flaskUrl = `http://127.0.0.1:5001/getData/${filename}/${kValue}/${thresholdValue}/${start}/${end}`;
   try {
     const res = await fetch(flaskUrl);
     if (!res.ok) {
@@ -51,9 +51,9 @@ async function mount(file, viewType) {
   const thresholdValue = document.getElementById('threshold-input').value;
   const timeSeriesData = await getData(file, kValue, thresholdValue);
   if (!errorStatus) {
-    mountChart(timeSeriesData, viewType)
     previousStart = Math.floor(timeSeriesData.data.length * 0.3);
     previousEnd = Math.floor(timeSeriesData.data.length * 0.4);
+    mountChart(timeSeriesData, viewType, previousStart, previousEnd)
     mountGraph(timeSeriesData)
     drawBox(kValue, thresholdValue)
   }
@@ -63,11 +63,11 @@ async function mount(file, viewType) {
 async function reloadChart(file) {
   const kValue = document.getElementById('k-input').value;
   const thresholdValue = document.getElementById('threshold-input').value;
-  const timeSeriesData = await getData(file, kValue, thresholdValue);
+  const timeSeriesData = await getData(file, kValue, thresholdValue, brushStart, brushEnd);
   // let viewType = document.querySelector('.active').value;
   let viewType = 1;
   if (!errorStatus) {
-    mountChart(timeSeriesData, viewType)
+    mountChart(timeSeriesData, viewType, brushStart, brushEnd)
     mountGraph(timeSeriesData)
     drawBox(kValue, thresholdValue)
   }
@@ -173,17 +173,20 @@ document.addEventListener('DOMContentLoaded', function () {
 export async function submitDepthParams(event) {
   event.preventDefault();
 
-    document.body.classList.add('freeze');
-
   const kValue = document.getElementById('k-input').value;
   const thresholdValue = document.getElementById('threshold-input').value;
 
   // change in defaults
-  if ((kValue != 1.5) || (thresholdValue != 0.4) || (previousStart != brushStart) || (previousEnd != brushEnd)) {
+  if ((parseFloat(kValue) != 1.5) || (parseFloat(thresholdValue) != 0.5) 
+        || (parseFloat(previousStart) != parseFloat(brushStart)) 
+          || (parseFloat(previousEnd) != parseFloat(brushEnd))) {
+    document.body.classList.add('freeze');
     const timeSeriesData = await computeOutliers(kValue, thresholdValue, brushStart, brushEnd)
-    document.body.classList.remove('freeze');
     updateLabels(timeSeriesData)
     updateData(timeSeriesData)
+    previousStart = brushStart;
+    previousEnd = brushEnd;
+    document.body.classList.remove('freeze');
   }
 }
 

@@ -91,11 +91,13 @@ function getXAxisScale(data, width) {
     }
 }
 
-export function mountChart(chartdata, viewType) {
+export function mountChart(chartdata, viewType, start, end) {
     svgdata = chartdata.data
     depths = chartdata.depths
     labels = chartdata.labels
     viewType = viewType
+    brushStart = start 
+    brushEnd = end
 
     size = { width: 700, height1: 200, height2: 100 }
 
@@ -342,6 +344,8 @@ function brushed(event) {
                 return Math.round(d.index) > Math.round(extent[1])
             }
         }) - 1;
+
+        console.log(brushStart, brushEnd)
 
         const t = d3.transition()
             .duration(400) 
