@@ -207,12 +207,9 @@ function saveData() {
     }
 
     this.csvData[c] = new Array();
-    // domain
-    this.csvData[c][0] = this.selectedDomain;
-    // qtype
-    this.csvData[c][1] = this.selectedTask.qtype;
-    // question
-    this.csvData[c][2] = this.selectedTask.question.replaceAll(",",""); // removing commas for later join
+    this.csvData[c][0] = this.selectedDomain; // domain
+    this.csvData[c][1] = this.selectedTask.qtype; // qtype
+    this.csvData[c][2] = this.selectedTask.question.replaceAll(",","");     // question
     // user answer
     var text_input;
     switch(selectedTask.atype) {
@@ -263,11 +260,11 @@ function saveData() {
         case "pairs":
         case "multiple":
             text_input = $('#answerDiv #inputText').val();
-            text_input = text_input.replace('\s/g', ''); // removing spaces
+            text_input = text_input ? text_input.replace('\s/g', '').replaceAll(",", " ") : " "; 
             if(text_input==null) {
                 this.csvData[c][3] = ""; // no selection
             } else {
-                this.csvData[c][3] = text_input.replace(",", " ");
+                this.csvData[c][3] = text_input;
             }
             // let input_arr = text_input.split(",");
             // for (var i=0; i<input_arr.length; i++) { // checking answer
