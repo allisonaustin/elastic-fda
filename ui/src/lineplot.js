@@ -95,14 +95,11 @@ export function mountChart(chartdata, viewType) {
     labels = chartdata.labels
     viewType = viewType
 
-    size = { width: 700, height1: 300, height2: 100 }
+    size = { width: 700, height1: 200, height2: 100 }
 
     d3.select('#line-svg').selectAll('*').remove()
 
-    svg = d3.select('#line-svg').attr('viewBox', `0 0 ${size.width + margin.right + margin.left} ${size.height1 + size.height2 + margin.top + margin.bottom}`);
-    chartContainer = svg.append('g')
-        .attr('id', 'time-series-container')
-        .attr('transform', `translate(0,${-margin.top})`)
+    chartContainer = d3.select('#line-svg').attr('viewBox', `0 0 ${size.width + margin.right + margin.left} ${size.height1 + size.height2 + margin.top}`);
 
     if (viewType == 1) {
         addLegend();
@@ -220,7 +217,7 @@ export function focusView(data) {
     
     const focus = chartContainer.append('g')
         .attr('class', 'focus')
-        .attr('transform', `translate(${margin.left},${margin.top})`)
+        .attr('transform', `translate(${margin.left},${-margin.top - margin.bottom})`)
     
     focus.selectAll('.line')
         .data(grouped)
@@ -269,7 +266,7 @@ function contextView(data, grouped) {
 
     const context = chartContainer.append('g')
       .attr('class', 'context')
-      .attr('transform', `translate(${ margin.left },${ size.height1 + size.height2 - margin.bottom - margin.top })`)
+      .attr('transform', `translate(${ margin.left },${ size.height1 })`)
     
     context.selectAll('.line')
         .data(grouped)
