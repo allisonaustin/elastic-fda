@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 import axios from 'axios';
 import { pallette, scale, percentColToD3Rgb } from './colors.js';
 import { isEmpty, debounce, isUndefined } from 'lodash';
+import { submitDepthParams } from '../main.js';
 
 const margin = { left: 50, right: 30, top: 20, bottom: 30 }
 let size = { width: 0, height1: 0, height2: 0 }
@@ -15,6 +16,7 @@ let svgdata = []
 let depths = []
 let labels = []
 let viewType = 1;
+let initial = true;
 
 export let brushStart;
 export let brushEnd;
@@ -106,6 +108,7 @@ export function mountChart(chartdata, viewType) {
         addFuncs();
     }
     focusView(chartdata.data);
+    initial = false;
 }
 
 function addLegend() {
@@ -307,7 +310,7 @@ function contextView(data, grouped) {
 
     const brush = d3.brushX(x2)
         .extent([[0, 20 ], [size.width, size.height2 + margin.top]])
-        .on('brush', brushed)
+        .on('end', brushed)
     
     context.append('g')
         .attr('class', 'x-brush')
@@ -340,13 +343,30 @@ function brushed(event) {
             }
         }) - 1;
 
-        d3.selectAll('.focus .line').attr('d', d => d3.line()
-            .x(d => x1(d.index))
-            .y(d => y1(d.value))
-            (d[1]) 
-        );
+        const t = d3.transition()
+            .duration(400) 
+            .ease(d3.easeCubicInOut);
 
-        d3.select('.focus .x-axis').call(d3.axisBottom(x1));
+        if (!initial) {
+            d3.selectAll('.focus .line')
+                .transition(t)
+                .attr('d', d => d3.line()
+                    .x(d => x1(d.index))
+                    .y(d => y1(d.value))
+                    (d[1]) 
+            );
+        } else {
+            d3.selectAll('.focus .line')
+                .attr('d', d => d3.line()
+                    .x(d => x1(d.index))
+                    .y(d => y1(d.value))
+                    (d[1]) 
+            );
+        }
+
+        d3.select('.focus .x-axis').transition(t).call(d3.axisBottom(x1));
+
+        submitDepthParams(new Event('submit'));
     }
 }
 

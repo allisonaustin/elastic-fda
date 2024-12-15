@@ -7,6 +7,7 @@ let previousEnd;
 let errorStatus;
 
 async function getData(filename, kValue, thresholdValue) {
+  console.log('getting data...')
   const flaskUrl = `http://127.0.0.1:5001/getData/${filename}/${kValue}/${thresholdValue}`;
   try {
     const res = await fetch(flaskUrl);
@@ -129,7 +130,6 @@ function init() {
   } else if (viewType == 1) {
     document.getElementById('depth-config').style.display = 'block';
   }
-
   mount(filename, viewType);
 }
 
@@ -159,19 +159,21 @@ window.update = () => {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  init();
+  // document.getElementById("depth-params").addEventListener("submit", submitDepthParams);
+  if (!window.hasInitialized) {
+    window.hasInitialized = true;
+    init();  
+  }
 })
 
 // document.getElementsByClassName("num-input").addEventListener("input", function (event) {
 //   this.value = this.value.replace(/[^0-9]/g, '');
 // });
 
-document.getElementById("depth-params").addEventListener("submit", submitDepthParams);
-
-async function submitDepthParams(event) {
+export async function submitDepthParams(event) {
   event.preventDefault();
 
-   document.body.classList.add('freeze');
+    document.body.classList.add('freeze');
 
   const kValue = document.getElementById('k-input').value;
   const thresholdValue = document.getElementById('threshold-input').value;
